@@ -7,7 +7,7 @@ import Footer from './components/Home/Footer';
 
 function App() {
     return (
-        <div className="app">
+        <div className="app-shell">
             <HeroSection />
             <FeaturesSection />
             <HowItWorks />
