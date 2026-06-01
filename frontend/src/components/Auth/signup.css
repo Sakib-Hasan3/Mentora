@@ -97,6 +97,7 @@
 .signup-form-card{ background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); padding:26px; border-radius:var(--radius); box-shadow: 0 12px 40px rgba(2,6,23,0.6); }
 .signup-form-header h2{ margin:6px 0 6px; }
 .signup-success{ background:linear-gradient(90deg,#05202311,var(--accent-2)11); color: #b7f3e1; padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(110,231,183,0.08); }
+.signup-error{ background: rgba(255, 158, 163, 0.1); color:#ffd9dc; padding:12px; border-radius:10px; margin-bottom:12px; border:1px solid rgba(255, 158, 163, 0.18); }
 
 .signup-form{ display:flex; flex-direction:column; gap:12px; }
 .field{ display:flex; flex-direction:column; gap:8px; }

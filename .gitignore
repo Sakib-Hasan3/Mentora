@@ -3,3 +3,5 @@
 
 # You can also add local envs or other dev files below
 .env.local
+.venv/
+backend/.venv/

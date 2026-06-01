@@ -1,14 +1,46 @@
-frontend:
-  build:
-    context: ./frontend
-    dockerfile: Dockerfile
-  container_name: mentora-frontend
-  depends_on:
-    - backend
-  ports:
-    - "3000:3000"
-  environment:
-    NEXT_PUBLIC_API_BASE: "http://localhost:8000"
-  volumes:
-    - ./frontend:/app
-    - /app/node_modules
+services:
+  mongo:
+    image: mongo:7
+    container_name: mentora-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: mentora-backend
+    depends_on:
+      - mongo
+    ports:
+      - "8000:8000"
+    environment:
+      MONGODB_URL: "mongodb://mongo:27017"
+      DATABASE_NAME: "mentora"
+      SECRET_KEY: "change-me-in-production"
+      ALGORITHM: "HS256"
+      ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+      ENV: "dev"
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mentora-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_BASE: "http://localhost:8000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:

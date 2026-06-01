@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './signup.css';
 
 const signupBenefits = [
@@ -16,6 +16,7 @@ const supportPoints = [
 ];
 
 const Signup = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -89,32 +90,63 @@ const Signup = () => {
         setIsLoading(true);
         setServerError('');
 
-        // Configurable endpoint: change if your backend exposes a different path
-        const endpoint = process.env.REACT_APP_SIGNUP_ENDPOINT || '/api/signup';
+        const apiBase = process.env.REACT_APP_API_BASE || 'http://localhost:8000';
 
-        fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: formData.name.trim(),
-                email: formData.email.trim(),
-                phone: formData.phone.trim(),
-                password: formData.password
-            })
-        })
-            .then(async (res) => {
-                const data = await res.json().catch(() => ({}));
-                if (!res.ok) {
-                    const msg = data?.detail || data?.message || 'সার্ভারে কিছু ত্রুটি হয়েছে';
-                    throw new Error(msg);
-                }
+        const buildUrl = (path) => new URL(path, apiBase).toString();
+        const endpointCandidates = [
+            process.env.REACT_APP_SIGNUP_ENDPOINT,
+            '/auth/signup',
+            '/api/signup'
+        ]
+            .filter(Boolean)
+            .map(buildUrl);
+
+        const payload = {
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim(),
+            password: formData.password
+        };
+
+        const attemptSignup = async (index = 0) => {
+            const endpoint = endpointCandidates[index];
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok) {
                 return data;
-            })
-            .then(() => {
+            }
+
+            const message = data?.detail || data?.message || 'সার্ভারে কিছু ত্রুটি হয়েছে';
+
+            if ((response.status === 404 || response.status === 405) && index + 1 < endpointCandidates.length) {
+                return attemptSignup(index + 1);
+            }
+
+            throw new Error(message);
+        };
+
+        attemptSignup()
+            .then((data) => {
+                const authData = {
+                    token: data?.token || '',
+                    user: data?.user || null,
+                    rememberMe: true
+                };
+
+                window.localStorage.setItem('mentora_auth', JSON.stringify(authData));
                 setSuccessMessage('আপনার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে। এখন আপনি Mentora ব্যবহার শুরু করতে পারেন।');
                 setFormData({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
                 setIsLoading(false);
-                setTimeout(() => setSuccessMessage(''), 3500);
+                setTimeout(() => {
+                    setSuccessMessage('');
+                    navigate('/dashboard');
+                }, 1100);
             })
             .catch((err) => {
                 setServerError(String(err.message || err));
@@ -193,6 +225,12 @@ const Signup = () => {
                     {successMessage && (
                         <div className="signup-success" role="status" aria-live="polite">
                             {successMessage}
+                        </div>
+                    )}
+
+                    {serverError && (
+                        <div className="signup-error" role="alert" aria-live="assertive">
+                            {serverError}
                         </div>
                     )}
 
