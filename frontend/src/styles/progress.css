@@ -1,0 +1,381 @@
+.progress-container {
+    min-height: 100vh;
+    background: linear-gradient(90deg, #0E1E19 0%, #162420 40%, #202920 100%);
+}
+
+.progress-header-bar {
+    background: rgba(14, 30, 25, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.progress-header-bar h1 {
+    color: #eff8f3;
+    font-size: 1.5rem;
+}
+
+.back-btn {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #10b981;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.back-btn:hover {
+    background: rgba(16, 185, 129, 0.25);
+}
+
+.progress-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.overview-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.overview-card:hover {
+    transform: translateY(-5px);
+    background: rgba(16, 185, 129, 0.05);
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+.overview-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.overview-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #10b981;
+    margin-bottom: 0.25rem;
+}
+
+.overview-label {
+    color: #a8c0b5;
+    font-size: 0.85rem;
+}
+
+.improvement-section {
+    margin-bottom: 2rem;
+}
+
+.improvement-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+.improvement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.improvement-title {
+    color: #a8c0b5;
+    font-size: 0.9rem;
+}
+
+.improvement-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.improvement-value.positive {
+    color: #10b981;
+}
+
+.improvement-value.negative {
+    color: #ef4444;
+}
+
+.improvement-bar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.improvement-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.improvement-text {
+    color: #a8c0b5;
+    font-size: 0.85rem;
+}
+
+.progress-chart-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.progress-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 1rem;
+    min-height: 300px;
+    padding: 1rem 0;
+}
+
+.chart-column {
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-bar {
+    width: 100%;
+    max-width: 60px;
+    min-height: 40px;
+    border-radius: 10px 10px 5px 5px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    transition: height 0.5s ease;
+    position: relative;
+}
+
+.chart-bar-value {
+    position: absolute;
+    top: -25px;
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.milestones-section {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.milestones-title {
+    color: #eff8f3;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.milestones-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.milestone-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.milestone-card.achieved {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.milestone-card.locked {
+    opacity: 0.6;
+}
+
+.milestone-icon {
+    font-size: 1.8rem;
+}
+
+.milestone-info {
+    flex: 1;
+}
+
+.milestone-title {
+    color: #eff8f3;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.milestone-date {
+    color: #a8c0b5;
+    font-size: 0.7rem;
+}
+
+.milestone-status {
+    font-size: 1.2rem;
+}
+
+.recommendation-section {
+    margin-bottom: 2rem;
+}
+
+.recommendation-card {
+    display: flex;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid;
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+
+.recommendation-icon {
+    font-size: 2rem;
+}
+
+.recommendation-content {
+    flex: 1;
+}
+
+.recommendation-title {
+    color: #eff8f3;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.recommendation-text {
+    color: #a8c0b5;
+    line-height: 1.6;
+}
+
+.progress-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.action-btn-primary {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 40px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.action-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+}
+
+.action-btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem 1.5rem;
+    border-radius: 40px;
+    color: #a8c0b5;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.action-btn-secondary:hover {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+
+.progress-loading {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg, #0E1E19 0%, #162420 40%, #202920 100%);
+}
+
+.progress-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(16, 185, 129, 0.2);
+    border-top-color: #10b981;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .progress-content {
+        padding: 1rem;
+    }
+    
+    .overview-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .progress-chart {
+        flex-direction: column;
+        align-items: stretch;
+        min-height: auto;
+    }
+    
+    .chart-column {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .chart-bar {
+        width: 80%;
+        height: 40px !important;
+        border-radius: 5px 10px 10px 5px;
+    }
+    
+    .chart-bar-value {
+        position: static;
+        margin-left: 0.5rem;
+    }
+    
+    .milestones-grid {
+        grid-template-columns: 1fr;
+    }
+}
