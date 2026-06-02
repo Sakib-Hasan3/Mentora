@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 import '../styles/dashboard.css';
 
 const Dashboard = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [chartData, setChartData] = useState(null);
     const [activities, setActivities] = useState(null);
@@ -40,12 +42,62 @@ const Dashboard = () => {
     };
 
     const features = [
-        { icon: '🧠', title: 'মানসিক স্বাস্থ্য পরীক্ষা', desc: 'এআই-চালিত বিশ্লেষণ পান' },
-        { icon: '📊', title: 'প্রগ্রেস ট্র্যাকিং', desc: 'আপনার উন্নতি পর্যবেক্ষণ করুন' },
-        { icon: '💬', title: '২৪/৭ সাপোর্ট', desc: 'যেকোনো সময় সাহায্য নিন' },
-        { icon: '🔒', title: '১০০% গোপনীয়', desc: 'আপনার তথ্য নিরাপদ' },
-        { icon: '📱', title: 'মোবাইল ফ্রেন্ডলি', desc: 'যেকোনো ডিভাইসে ব্যবহার করুন' },
-        { icon: '👥', title: 'কমিউনিটি সাপোর্ট', desc: 'অন্যদের সাথে সংযোগ করুন' }
+        { 
+            icon: '🧠', 
+            title: 'মানসিক স্বাস্থ্য পরীক্ষা', 
+            desc: 'এআই-চালিত বিশ্লেষণ পান',
+            route: '/assessment',
+            color: 'linear-gradient(135deg, #667eea, #764ba2)'
+        },
+        { 
+            icon: '📊', 
+            title: 'প্রগ্রেস ট্র্যাকিং', 
+            desc: 'আপনার উন্নতি পর্যবেক্ষণ করুন',
+            route: '/progress',
+            color: 'linear-gradient(135deg, #10b981, #059669)'
+        },
+        { 
+            icon: '📚', 
+            title: 'বুক জার্নাল', 
+            desc: 'মানসিক স্বাস্থ্য সম্পর্কিত বই পড়ুন',
+            route: '/books',
+            color: 'linear-gradient(135deg, #f59e0b, #d97706)'
+        },
+        { 
+            icon: '👥', 
+            title: 'কমিউনিটি', 
+            desc: 'ডিভিশন ভিত্তিক গ্রুপ চ্যাট',
+            route: '/community',
+            color: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+        },
+        { 
+            icon: '🧑‍⚕️', 
+            title: 'কনসালট্যান্ট', 
+            desc: 'বিশেষজ্ঞের সাথে পরামর্শ করুন',
+            route: '/consultants',
+            color: 'linear-gradient(135deg, #ef4444, #dc2626)'
+        },
+        { 
+            icon: '💬', 
+            title: '২৪/৭ সাপোর্ট', 
+            desc: 'যেকোনো সময় সাহায্য নিন',
+            route: '/support',
+            color: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+        },
+        { 
+            icon: '🔒', 
+            title: 'গোপনীয়তা', 
+            desc: 'আপনার তথ্য নিরাপদ',
+            route: '/privacy',
+            color: 'linear-gradient(135deg, #6b7280, #4b5563)'
+        },
+        { 
+            icon: '📱', 
+            title: 'মোবাইল ফ্রেন্ডলি', 
+            desc: 'যেকোনো ডিভাইসে ব্যবহার করুন',
+            route: '/mobile',
+            color: 'linear-gradient(135deg, #14b8a6, #0d9488)'
+        }
     ];
 
     if (loading) {
@@ -73,12 +125,12 @@ const Dashboard = () => {
                     </div>
                     
                     <div className="user-menu">
-                        <button className="notification-btn">
+                        <button className="notification-btn" onClick={() => navigate('/notifications')}>
                             🔔
                             <span className="notification-badge">৩</span>
                         </button>
                         
-                        <div className="user-profile">
+                        <div className="user-profile" onClick={() => navigate('/profile')}>
                             <div className="user-info">
                                 <div className="user-name">{user?.name}</div>
                                 <div className="user-email">{user?.email}</div>
@@ -111,7 +163,7 @@ const Dashboard = () => {
 
                 {/* Stats Grid */}
                 <div className="stats-grid">
-                    <div className="stat-card">
+                    <div className="stat-card" onClick={() => navigate('/assessment')} style={{ cursor: 'pointer' }}>
                         <div className="stat-header">
                             <span className="stat-title">মানসিক সুস্থতা স্কোর</span>
                             <div className="stat-icon" style={{ background: '#f3e8ff' }}>🧠</div>
@@ -125,7 +177,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" onClick={() => navigate('/assessment/history')} style={{ cursor: 'pointer' }}>
                         <div className="stat-header">
                             <span className="stat-title">মোট অ্যাসেসমেন্ট</span>
                             <div className="stat-icon" style={{ background: '#e0f2fe' }}>📝</div>
@@ -134,7 +186,7 @@ const Dashboard = () => {
                         <div className="stat-change positive">সদস্য {stats?.member_since || 'জুন ২০২৪'} থেকে</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" onClick={() => navigate('/stress-management')} style={{ cursor: 'pointer' }}>
                         <div className="stat-header">
                             <span className="stat-title">স্ট্রেস লেভেল</span>
                             <div className="stat-icon" style={{ background: '#ffedd5' }}>😰</div>
@@ -143,7 +195,7 @@ const Dashboard = () => {
                         <div className="stat-change negative">↓ ১২% গত সপ্তাহে</div>
                     </div>
 
-                    <div className="stat-card">
+                    <div className="stat-card" onClick={() => navigate('/meditation')} style={{ cursor: 'pointer' }}>
                         <div className="stat-header">
                             <span className="stat-title">মেডিটেশন সেশন</span>
                             <div className="stat-icon" style={{ background: '#dcfce7' }}>🧘</div>
@@ -160,8 +212,15 @@ const Dashboard = () => {
                     </div>
                     <div className="features-grid">
                         {features.map((feature, index) => (
-                            <div key={index} className="feature-item">
-                                <div className="feature-icon">{feature.icon}</div>
+                            <div 
+                                key={index} 
+                                className="feature-item" 
+                                onClick={() => navigate(feature.route)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <div className="feature-icon" style={{ background: feature.color }}>
+                                    {feature.icon}
+                                </div>
                                 <div className="feature-text">
                                     <h4>{feature.title}</h4>
                                     <p>{feature.desc}</p>
@@ -189,7 +248,7 @@ const Dashboard = () => {
                     </div>
                     
                     {chartData && chartData.labels && chartData.data && chartData.data.length > 0 && (
-                        <div className="chart-bars">
+                        <div className="chart-bars" onClick={() => navigate('/progress')} style={{ cursor: 'pointer' }}>
                             {chartData.labels.slice(-7).map((label, index) => {
                                 const value = chartData.data[chartData.data.length - 7 + index] || 0;
                                 return (
@@ -205,27 +264,23 @@ const Dashboard = () => {
                             })}
                         </div>
                     )}
-                    
-                    {chartData && (!chartData.data || chartData.data.length === 0) && (
-                        <div style={{ textAlign: 'center', padding: '3rem' }}>
-                            <p style={{ color: '#6b7280' }}>এখনো কোনো অ্যাসেসমেন্ট নেই।</p>
-                            <button className="action-btn" style={{ background: '#667eea', color: 'white', marginTop: '1rem' }}>
-                                প্রথম অ্যাসেসমেন্ট দিন →
-                            </button>
-                        </div>
-                    )}
                 </div>
 
                 {/* Recent Activities */}
                 <div className="activities-section">
                     <div className="section-header">
                         <h3 className="section-title">⏰ সাম্প্রতিক কার্যকলাপ</h3>
-                        <a href="#" className="view-all">সব দেখুন →</a>
+                        <button onClick={() => navigate('/activities')} className="view-all">সব দেখুন →</button>
                     </div>
                     
                     <div className="activity-list">
                         {activities?.activities?.map((activity, index) => (
-                            <div key={index} className="activity-item">
+                            <div 
+                                key={index} 
+                                className="activity-item" 
+                                onClick={() => navigate(`/assessment/${activity.id}`)}
+                                style={{ cursor: 'pointer' }}
+                            >
                                 <div className="activity-icon" style={{ background: `${activity.color}15` }}>
                                     {activity.icon}
                                 </div>
@@ -242,21 +297,33 @@ const Dashboard = () => {
 
                 {/* Quick Actions */}
                 <div className="actions-grid">
-                    <div className="action-card" style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+                    <div 
+                        className="action-card" 
+                        style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)', cursor: 'pointer' }}
+                        onClick={() => navigate('/assessment')}
+                    >
                         <div className="action-icon">🧠</div>
                         <h4 className="action-title">মানসিক স্বাস্থ্য পরীক্ষা</h4>
                         <p className="action-desc">আপনার মানসিক অবস্থার দ্রুত বিশ্লেষণ পান</p>
                         <button className="action-btn">শুরু করুন →</button>
                     </div>
                     
-                    <div className="action-card" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                    <div 
+                        className="action-card" 
+                        style={{ background: 'linear-gradient(135deg, #10b981, #059669)', cursor: 'pointer' }}
+                        onClick={() => navigate('/meditation')}
+                    >
                         <div className="action-icon">🧘</div>
                         <h4 className="action-title">মেডিটেশন সেশন</h4>
                         <p className="action-desc">১০ মিনিটের গাইডেড মেডিটেশন</p>
                         <button className="action-btn">শুরু করুন →</button>
                     </div>
                     
-                    <div className="action-card" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                    <div 
+                        className="action-card" 
+                        style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', cursor: 'pointer' }}
+                        onClick={() => navigate('/consultants')}
+                    >
                         <div className="action-icon">💬</div>
                         <h4 className="action-title">বিশেষজ্ঞের সাথে কথা বলুন</h4>
                         <p className="action-desc">প্রফেশনাল কাউন্সেলরের সাথে সংযোগ করুন</p>
