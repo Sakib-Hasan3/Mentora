@@ -6,6 +6,7 @@ from core.config import settings
 from auth import auth_router
 from dashboard import dashboard_router
 from assessment import assessment_router
+from progress import progress_router
 
 
 @asynccontextmanager
@@ -31,7 +32,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://192.168.98.226:3000",
-        "http://localhost:3001",
+        "http://192.168.163.226:3000",
         "*"
     ],
     allow_credentials=True,
@@ -43,6 +44,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(assessment_router, prefix="/api")
+app.include_router(progress_router, prefix="/api")
 
 
 @app.get("/")
@@ -65,6 +67,13 @@ def root():
                 "questions": "GET /api/assessment/questions",
                 "submit": "POST /api/assessment/submit",
                 "all": "GET /api/assessment/all"
+            },
+            "progress": {
+                "overview": "GET /api/progress/overview",
+                "weekly": "GET /api/progress/weekly",
+                "monthly": "GET /api/progress/monthly",
+                "yearly": "GET /api/progress/yearly",
+                "milestones": "GET /api/progress/milestones"
             }
         }
     }
