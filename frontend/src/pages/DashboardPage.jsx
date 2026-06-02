@@ -5,6 +5,7 @@ import WelcomeBanner from '../components/Dashboard/WelcomeBanner';
 import StatsCard from '../components/Dashboard/StatsCard';
 import Chart from '../components/Dashboard/Chart';
 import RecentActivity from '../components/Dashboard/RecentActivity';
+import '../styles/dashboard.css';
 
 const Dashboard = () => {
     const [userName, setUserName] = useState('রহিম');
@@ -18,7 +19,9 @@ const Dashboard = () => {
     ];
     
     return (
-        <div className="flex bg-gray-50 min-h-screen">
+        <div className="dashboard-page">
+            <div className="dashboard-glow dashboard-glow-left" />
+            <div className="dashboard-glow dashboard-glow-right" />
             <Sidebar />
             
             <div className="flex-1 ml-64">
@@ -44,7 +47,7 @@ const Dashboard = () => {
                     {/* অতিরিক্ত বিভাগ */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* কুইক অ্যাকশন */}
-                        <div className="bg-white rounded-xl shadow-md p-6">
+                        <div className="dashboard-card">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">দ্রুত পদক্ষেপ</h3>
                             <div className="space-y-3">
                                 <button className="w-full bg-purple-50 text-purple-600 p-3 rounded-lg hover:bg-purple-100 transition">
@@ -60,7 +63,7 @@ const Dashboard = () => {
                         </div>
                         
                         {/* মোটিভেশনাল টিপস */}
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-md p-6 text-white">
+                        <div className="dashboard-card-special">
                             <div className="text-4xl mb-3">💚</div>
                             <h3 className="text-xl font-bold mb-2">আজকের টিপস</h3>
                             <p className="opacity-90 mb-4">
@@ -72,7 +75,7 @@ const Dashboard = () => {
                         </div>
                         
                         {/* নেক্সট অ্যাসেসমেন্ট */}
-                        <div className="bg-white rounded-xl shadow-md p-6">
+                        <div className="dashboard-card">
                             <h3 className="text-lg font-semibold text-gray-800 mb-4">পরবর্তী নির্ধারিত</h3>
                             <div className="text-center py-6">
                                 <div className="text-5xl mb-3">📅</div>
