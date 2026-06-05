@@ -429,4 +429,105 @@
         flex-direction: row;
         flex-wrap: wrap;
     }
+
+  
+/* Tag Add Button */
+.tag-add-btn {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    color: #10b981;
+    cursor: pointer;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.tag-add-btn:hover {
+    background: #10b981;
+    color: white;
+}
+
+/* Comment Time */
+.comment-time {
+    font-size: 0.65rem;
+    color: #6b7280;
+    margin-left: 0.5rem;
+}
+
+.comment-actions {
+    margin-top: 0.25rem;
+}
+
+.comment-like-btn {
+    background: none;
+    border: none;
+    color: #a8c0b5;
+    font-size: 0.7rem;
+    cursor: pointer;
+    padding: 0;
+}
+
+.comment-like-btn:hover {
+    color: #10b981;
+}
+
+.anonymous-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #a8c0b5;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.no-comments {
+    text-align: center;
+    padding: 1rem;
+    color: #a8c0b5;
+    font-size: 0.85rem;
+}
+
+/* Post Card Animation */
+.post-card {
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading State for Comments */
+.comment-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+    .comment-form {
+        flex-direction: column;
+    }
+    
+    .comment-form textarea {
+        width: 100%;
+    }
+    
+    .anonymous-checkbox {
+        margin-top: 0.5rem;
+    }
+    
+    .comment-submit {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
 }
