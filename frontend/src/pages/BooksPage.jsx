@@ -14,6 +14,7 @@ const BooksPage = () => {
     const [quotes, setQuotes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedVideo, setSelectedVideo] = useState(null);
 
     useEffect(() => {
         fetchAllData();
@@ -25,19 +26,15 @@ const BooksPage = () => {
         try {
             if (activeTab === 'books') {
                 const data = await api.get('/books/books?page=1&limit=20');
-                console.log('Books data:', data);
                 setBooks(data.books || []);
             } else if (activeTab === 'articles') {
                 const data = await api.get('/books/articles?page=1&limit=20');
-                console.log('Articles data:', data);
                 setArticles(data.articles || []);
             } else if (activeTab === 'videos') {
                 const data = await api.get('/books/videos?page=1&limit=20');
-                console.log('Videos data:', data);
                 setVideos(data.videos || []);
             } else if (activeTab === 'quotes') {
                 const data = await api.get('/books/quotes?page=1&limit=20');
-                console.log('Quotes data:', data);
                 setQuotes(data.quotes || []);
             }
         } catch (err) {
@@ -54,6 +51,27 @@ const BooksPage = () => {
             fetchAllData();
         } catch (error) {
             console.error('Failed to like:', error);
+        }
+    };
+
+    // বই ওপেন করার ফাংশন
+    const openBook = (book) => {
+        if (book.file_url) {
+            window.open(book.file_url, '_blank');
+        } else {
+            alert(`"${book.title_bn || book.title}" - এই বইটি পড়ার জন্য লিংক যোগ করা হয়নি।`);
+        }
+    };
+
+    // ভিডিও চালানোর ফাংশন
+    const playVideo = (video) => {
+        if (video.youtube_url) {
+            let videoId = video.youtube_url.split('v=')[1] || video.youtube_url.split('/').pop();
+            if (videoId.includes('&')) videoId = videoId.split('&')[0];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            window.open(embedUrl, '_blank');
+        } else {
+            alert(`"${video.title_bn || video.title}" - এই ভিডিওটি চালানোর জন্য লিংক যোগ করা হয়নি।`);
         }
     };
 
@@ -120,7 +138,7 @@ const BooksPage = () => {
                             <div className="no-data">কোনো বই পাওয়া যায়নি</div>
                         ) : (
                             books.map(book => (
-                                <div key={book.id} className="book-card">
+                                <div key={book.id} className="book-card" onClick={() => openBook(book)} style={{ cursor: 'pointer' }}>
                                     <div className="book-cover">
                                         <span className="book-emoji">📚</span>
                                     </div>
@@ -133,7 +151,10 @@ const BooksPage = () => {
                                         </div>
                                         <button 
                                             className="book-action-btn"
-                                            onClick={() => handleLike('book', book.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleLike('book', book.id);
+                                            }}
                                         >
                                             👍 লাইক দিন
                                         </button>
@@ -175,7 +196,7 @@ const BooksPage = () => {
                             <div className="no-data">কোনো ভিডিও পাওয়া যায়নি</div>
                         ) : (
                             videos.map(video => (
-                                <div key={video.id} className="video-card">
+                                <div key={video.id} className="video-card" onClick={() => playVideo(video)} style={{ cursor: 'pointer' }}>
                                     <div className="video-thumbnail">
                                         <span className="video-play">▶️</span>
                                     </div>
@@ -186,7 +207,15 @@ const BooksPage = () => {
                                             <span>👁️ {video.views} ভিউ</span>
                                             <span>⏱️ {video.duration}</span>
                                         </div>
-                                        <button className="watch-btn">ওয়াচ →</button>
+                                        <button 
+                                            className="watch-btn"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                playVideo(video);
+                                            }}
+                                        >
+                                            ওয়াচ →
+                                        </button>
                                     </div>
                                 </div>
                             ))
@@ -219,6 +248,22 @@ const BooksPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Video Modal */}
+            {selectedVideo && (
+                <div className="video-modal" onClick={() => setSelectedVideo(null)}>
+                    <div className="video-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <button className="video-modal-close" onClick={() => setSelectedVideo(null)}>✕</button>
+                        <iframe
+                            src={`https://www.youtube.com/embed/${selectedVideo}?autoplay=1`}
+                            title="YouTube Video"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        ></iframe>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
