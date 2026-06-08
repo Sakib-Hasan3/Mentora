@@ -4,6 +4,7 @@ from auth.dependencies.auth import get_current_user
 from core.database import db
 from assessment.models.assessment import AssessmentModel, AssessmentStatsModel
 from assessment.schemas.assessment import AssessmentSubmit, AssessmentResponse, AssessmentListResponse
+from notifications.services.notification_service import notification_service
 
 router = APIRouter(prefix="/assessment", tags=["Assessment"])
 
@@ -73,6 +74,13 @@ async def submit_assessment(
     result = await db.get_collection(ASSESSMENT_COLLECTION).insert_one(assessment_doc)
     
     await update_user_stats(user_id, final_score)
+    
+    # 🔔 নোটিফিকেশন পাঠান
+    await notification_service.notify_assessment_completed(
+        user_id=user_id,
+        score=final_score,
+        level=level
+    )
     
     return {
         "success": True,
