@@ -10,6 +10,8 @@ from progress import progress_router
 from chatbot import chatbot_router
 from books import books_router
 from community import community_router
+from consultant import consultant_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,12 +21,14 @@ async def lifespan(app: FastAPI):
     yield
     await db.disconnect()
 
+
 app = FastAPI(
     title="Mental Health API",
     description="Mental Health Assessment & Dashboard API",
     version="2.0.0",
     lifespan=lifespan
 )
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -34,6 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 app.include_router(auth_router, prefix="/api")
 app.include_router(dashboard_router, prefix="/api")
 app.include_router(assessment_router, prefix="/api")
@@ -41,6 +46,8 @@ app.include_router(progress_router, prefix="/api")
 app.include_router(chatbot_router, prefix="/api")
 app.include_router(books_router, prefix="/api")
 app.include_router(community_router, prefix="/api")
+app.include_router(consultant_router, prefix="/api")
+
 
 @app.get("/")
 def root():
@@ -71,15 +78,20 @@ def root():
                 "milestones": "GET /api/progress/milestones"
             },
             "books": {
-                "books": "GET /api/books/books",
-                "articles": "GET /api/books/articles",
-                "videos": "GET /api/books/videos",
-                "quotes": "GET /api/books/quotes",
-                "featured": "GET /api/books/featured",
-                "categories": "GET /api/books/categories"
+                "books": "GET /api/books/books"
+            },
+            "community": {
+                "posts": "GET /api/community/posts",
+                "create": "POST /api/community/posts"
+            },
+            "consultants": {
+                "list": "GET /api/consultants/",
+                "book": "POST /api/consultants/{id}/book",
+                "my_bookings": "GET /api/consultants/my-bookings"
             }
         }
     }
+
 
 @app.get("/health")
 def health_check():
