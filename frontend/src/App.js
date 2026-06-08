@@ -11,6 +11,7 @@ import SupportPage from './pages/SupportPage';
 import BooksPage from './pages/BooksPage';
 import CommunityPage from './pages/CommunityPage';
 import ConsultantsPage from './pages/ConsultantsPage';
+import NotificationsPage from './pages/NotificationsPage';
 import './styles/globals.css';
 import './styles/dashboard.css';
 import './styles/assessment.css';
@@ -69,6 +70,7 @@ function AppRoutes() {
             <Route path="/notifications" element={user ? <ComingSoon title="নোটিফিকেশন" /> : <Navigate to="/login" />} />
             <Route path="/activities" element={user ? <ComingSoon title="সব কার্যকলাপ" /> : <Navigate to="/login" />} />
             <Route path="/stress-management" element={user ? <ComingSoon title="স্ট্রেস ম্যানেজমেন্ট" /> : <Navigate to="/login" />} />
+            <Route path="/notifications" element={user ? <NotificationsPage /> : <Navigate to="/login" />} />
             <Route path="/meditation" element={user ? <ComingSoon title="মেডিটেশন" /> : <Navigate to="/login" />} />
         </Routes>
     );
