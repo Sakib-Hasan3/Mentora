@@ -9,13 +9,13 @@ from community.schemas.community import (
     CreatePost, UpdatePost, CreateComment,
     PostResponse, PostDetailResponse, PostsListResponse
 )
+from notifications.services.notification_service import notification_service
 
 router = APIRouter(prefix="/community", tags=["Community"])
 
 POSTS_COLLECTION = "community_posts"
 LIKES_COLLECTION = "community_likes"
 
-# Divisions of Bangladesh
 DIVISIONS = [
     {"name": "ঢাকা", "districts": ["ঢাকা", "গাজীপুর", "নারায়ণগঞ্জ", "টাঙ্গাইল", "কিশোরগঞ্জ"]},
     {"name": "চট্টগ্রাম", "districts": ["চট্টগ্রাম", "কক্সবাজার", "কুমিল্লা", "ফেনী", "ব্রাহ্মণবাড়িয়া"]},
@@ -26,8 +26,6 @@ DIVISIONS = [
     {"name": "রংপুর", "districts": ["রংপুর", "দিনাজপুর", "কুড়িগ্রাম", "গাইবান্ধা", "নীলফামারী"]},
     {"name": "ময়মনসিংহ", "districts": ["ময়মনসিংহ", "জামালপুর", "শেরপুর", "নেত্রকোণা"]}
 ]
-
-# ========== POSTS ==========
 
 @router.get("/divisions")
 async def get_divisions(current_user: dict = Depends(get_current_user)):
@@ -139,8 +137,6 @@ async def delete_post(post_id: str, current_user: dict = Depends(get_current_use
     
     return {"success": True, "message": "পোস্ট ডিলিট হয়েছে"}
 
-# ========== LIKES ==========
-
 @router.post("/posts/{post_id}/like")
 async def like_post(post_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user["id"]
@@ -164,8 +160,6 @@ async def like_post(post_id: str, current_user: dict = Depends(get_current_user)
         )
         return {"success": True, "message": "লাইক দেওয়া হয়েছে"}
 
-# ========== COMMENTS ==========
-
 @router.post("/posts/{post_id}/comments")
 async def add_comment(
     post_id: str,
@@ -188,6 +182,14 @@ async def add_comment(
         {"_id": ObjectId(post_id)},
         {"$push": {"comments": comment}}
     )
+    
+    # 🔔 পোস্টের মালিককে নোটিফিকেশন পাঠান (যদি নিজে নিজের পোস্টে কমেন্ট না করে)
+    if post["user_id"] != current_user["id"]:
+        await notification_service.notify_community_activity(
+            user_id=post["user_id"],
+            post_title=post["title"],
+            post_id=post_id
+        )
     
     return {"success": True, "message": "কমেন্ট যোগ হয়েছে"}
 
