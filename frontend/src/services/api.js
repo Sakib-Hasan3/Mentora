@@ -1,16 +1,24 @@
+import { readStoredAuth } from '../context/AuthContext';
+
 const API_URL = 'http://localhost:8000/api';
 
 const getToken = () => {
-    const token = localStorage.getItem('token');
-    console.log('Token from localStorage:', token ? token.substring(0, 50) + '...' : 'No token');
+    const auth = readStoredAuth();
+    const token = auth ? auth.token : null;
+    console.log('Token from storage:', token ? token.substring(0, 50) + '...' : 'No token');
     return token;
 };
 
 const handleResponse = async (response) => {
     if (response.status === 401) {
         console.log('401 Unauthorized - clearing token');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        // Use the clear function from auth context to be safe
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+        localStorage.removeItem(LEGACY_TOKEN_KEY);
+        localStorage.removeItem(LEGACY_USER_KEY);
+        sessionStorage.removeItem(AUTH_STORAGE_KEY);
+        sessionStorage.removeItem(LEGACY_TOKEN_KEY);
+        sessionStorage.removeItem(LEGACY_USER_KEY);
         window.location.href = '/login';
         throw new Error('Session expired. Please login again.');
     }
@@ -59,3 +67,9 @@ export const api = {
     }),
     delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
 };
+
+// For handleResponse, we need the keys. It's better to import them if they are exported,
+// but for now, we'll redefine them to avoid breaking changes if they are not.
+const AUTH_STORAGE_KEY = 'mentora_auth';
+const LEGACY_TOKEN_KEY = 'token';
+const LEGACY_USER_KEY = 'user';
