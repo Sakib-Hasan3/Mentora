@@ -16,6 +16,9 @@ import asyncio
 from datetime import datetime
 from scheduler import check_assessment_reminders, send_daily_meditation_reminder
 from ml_assessment import ml_assessment_router
+from ml_model import ml_assessment_router
+from rag_system import rag_router
+
 
 
 async def start_background_tasks():
@@ -74,6 +77,8 @@ app.include_router(community_router, prefix="/api")
 app.include_router(consultant_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
 app.include_router(ml_assessment_router, prefix="/api")
+app.include_router(ml_assessment_router, prefix="/api")
+app.include_router(rag_router, prefix="/api")
 
 @app.get("/")
 def root():
