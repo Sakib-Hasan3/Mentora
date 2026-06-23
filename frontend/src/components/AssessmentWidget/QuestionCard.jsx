@@ -5,7 +5,7 @@ const QuestionCard = ({ question, index, selectedValue, onAnswer }) => {
         <div className="question-item" data-question-index={index}>
             <div className="question-header">
                 <span className="question-icon">{question.icon}</span>
-                <span className="question-number">{index + 1}/4</span>
+                <span className="question-number">প্রশ্ন {index + 1}/{4}</span>
             </div>
             <div className="question-text">{question.text}</div>
             <div className="options-group">
