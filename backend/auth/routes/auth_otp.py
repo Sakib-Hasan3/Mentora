@@ -118,3 +118,97 @@ async def verify_otp(request: OTPVerifyRequest):
             "is_admin": user.get("is_admin", False)
         }
     }
+
+
+# ── EMAIL OTP ──────────────────────────────────────────────────────────────
+
+class EmailOTPSendRequest(BaseModel):
+    email: str
+
+class EmailOTPVerifyRequest(BaseModel):
+    email: str
+    otp: str
+
+EMAIL_OTP_COLLECTION = "email_otps"
+
+@router.post("/send-email")
+async def send_email_otp(request: EmailOTPSendRequest):
+    email = request.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status_code=400, detail="সঠিক ইমেইল ঠিকানা প্রয়োজন")
+
+    # Check if email already used and verified
+    existing_user = await db.get_collection(USER_COLLECTION).find_one(
+        {"email": email, "email_verified": True}
+    )
+    if existing_user:
+        raise HTTPException(status_code=400, detail="এই ইমেইলে ইতিমধ্যে একটি যাচাইকৃত একাউন্ট আছে")
+
+    # Generate 6-digit OTP
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+
+    await db.get_collection(EMAIL_OTP_COLLECTION).update_one(
+        {"email": email},
+        {
+            "$set": {
+                "otp": otp_code,
+                "expires_at": expires_at,
+                "created_at": datetime.utcnow(),
+                "attempts": 0
+            }
+        },
+        upsert=True
+    )
+
+    # In production: send real email via SMTP/SendGrid
+    # For dev: print to terminal
+    print("\n" + "="*55)
+    print(f"📧 [EMAIL OTP] Verification code simulation:")
+    print(f"   To     : {email}")
+    print(f"   Subject: Mentora ইমেইল যাচাইকরণ কোড")
+    print(f"   OTP    : {otp_code}  (expires in 10 minutes)")
+    print("="*55 + "\n")
+
+    return {
+        "success": True,
+        "message": f"OTP কোড {email} এ পাঠানো হয়েছে",
+        "debug_otp": otp_code   # Remove in production
+    }
+
+
+@router.post("/verify-email")
+async def verify_email_otp(request: EmailOTPVerifyRequest):
+    email = request.email.strip().lower()
+    otp   = request.otp.strip()
+
+    record = await db.get_collection(EMAIL_OTP_COLLECTION).find_one({
+        "email": email,
+        "expires_at": {"$gt": datetime.utcnow()}
+    })
+
+    if not record:
+        raise HTTPException(status_code=400, detail="OTP মেয়াদ শেষ হয়ে গেছে। নতুন OTP পাঠান।")
+
+    if record["otp"] != otp:
+        # Track wrong attempts
+        await db.get_collection(EMAIL_OTP_COLLECTION).update_one(
+            {"_id": record["_id"]},
+            {"$inc": {"attempts": 1}}
+        )
+        raise HTTPException(status_code=400, detail="OTP কোড ভুল। আবার চেষ্টা করুন।")
+
+    # Delete OTP after success
+    await db.get_collection(EMAIL_OTP_COLLECTION).delete_one({"_id": record["_id"]})
+
+    # Mark user's email as verified (if account exists)
+    await db.get_collection(USER_COLLECTION).update_one(
+        {"email": email},
+        {"$set": {"email_verified": True}}
+    )
+
+    return {
+        "success": True,
+        "message": "ইমেইল সফলভাবে যাচাই হয়েছে!",
+        "email": email
+    }
