@@ -1,17 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { getApiBaseUrl } from '../utils/apiUrl';
 
 const AuthContext = createContext({});
 
 export const useAuth = () => useContext(AuthContext);
-
-const getApiUrl = () => {
-    if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        return `http://${hostname}:8000/api`;
-    }
-    return 'http://localhost:8000/api';
-};
-const API_URL = getApiUrl();
 const AUTH_STORAGE_KEY = 'mentora_auth';
 const LEGACY_TOKEN_KEY = 'token';
 const LEGACY_USER_KEY = 'user';
@@ -92,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (name, email, password, rememberMe = true, persistSession = true) => {
         try {
-            const res = await fetch(`${API_URL}/auth/signup`, {
+            const res = await fetch(`${getApiBaseUrl()}/auth/signup`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password })
@@ -116,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password, rememberMe = true) => {
         try {
-            const res = await fetch(`${API_URL}/auth/login`, {
+            const res = await fetch(`${getApiBaseUrl()}/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -138,7 +130,7 @@ export const AuthProvider = ({ children }) => {
 
     const loginWithOTP = async (phone, otp, rememberMe = true) => {
         try {
-            const res = await fetch(`${API_URL}/auth/otp/verify`, {
+            const res = await fetch(`${getApiBaseUrl()}/auth/otp/verify`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone, otp })
@@ -160,7 +152,7 @@ export const AuthProvider = ({ children }) => {
 
     const loginWithGoogle = async (email, name, rememberMe = true) => {
         try {
-            const res = await fetch(`${API_URL}/auth/google`, {
+            const res = await fetch(`${getApiBaseUrl()}/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, name })
