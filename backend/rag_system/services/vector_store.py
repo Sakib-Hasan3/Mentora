@@ -25,6 +25,10 @@ class HuggingFaceAPIEmbeddingFunction(EmbeddingFunction):
         self.headers = {"Authorization": f"Bearer {HF_API_KEY}"}
         self.retries = retries
 
+    def name(self) -> str:
+        # Must match the persisted collection's embedding function name
+        return "sentence_transformer"
+
     def __call__(self, input: Documents) -> Embeddings:
         payload = {"inputs": list(input), "options": {"wait_for_model": True}}
         for attempt in range(1, self.retries + 1):
@@ -44,11 +48,19 @@ class HuggingFaceAPIEmbeddingFunction(EmbeddingFunction):
 
 class VectorStoreService:
     def __init__(self, collection_name: str = "mental_health_knowledge"):
-        persist_dir = Path(__file__).parent.parent.parent / "chroma_db"
-        persist_dir.mkdir(exist_ok=True)
-
-        self.client = chromadb.PersistentClient(path=str(persist_dir))
         self.embedding_fn = HuggingFaceAPIEmbeddingFunction()
+
+        # On Render (production), filesystem is ephemeral — use in-memory client.
+        # Locally, use PersistentClient so data survives restarts.
+        is_production = os.getenv("ENV", "development").lower() == "production"
+        if is_production:
+            self.client = chromadb.EphemeralClient()
+            logger.info("🌐 ChromaDB: EphemeralClient (production/Render mode)")
+        else:
+            persist_dir = Path(__file__).parent.parent.parent / "chroma_db"
+            persist_dir.mkdir(exist_ok=True)
+            self.client = chromadb.PersistentClient(path=str(persist_dir))
+            logger.info("💾 ChromaDB: PersistentClient at %s", persist_dir)
 
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
