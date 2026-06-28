@@ -1,26 +1,62 @@
+import os
+import time
+import logging
+import requests
 import chromadb
-from chromadb.utils import embedding_functions
+from chromadb import Documents, EmbeddingFunction, Embeddings
 from typing import List, Dict, Any
 import uuid
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
+
+HF_API_KEY = os.getenv("HF_API_KEY", "")
+HF_MODEL_URL = (
+    "https://api-inference.huggingface.co/pipeline/feature-extraction/"
+    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+)
+
+
+class HuggingFaceAPIEmbeddingFunction(EmbeddingFunction):
+    """ChromaDB embedding function using HuggingFace Inference API."""
+
+    def __init__(self, retries: int = 3):
+        self.api_url = HF_MODEL_URL
+        self.headers = {"Authorization": f"Bearer {HF_API_KEY}"}
+        self.retries = retries
+
+    def __call__(self, input: Documents) -> Embeddings:
+        payload = {"inputs": list(input), "options": {"wait_for_model": True}}
+        for attempt in range(1, self.retries + 1):
+            try:
+                resp = requests.post(self.api_url, headers=self.headers, json=payload, timeout=30)
+                resp.raise_for_status()
+                result = resp.json()
+                if isinstance(result, list) and len(result) > 0 and isinstance(result[0], list):
+                    return result
+                raise ValueError(f"Unexpected HF API response: {type(result)}")
+            except Exception as exc:
+                logger.warning("HF vector store embedding attempt %d/%d: %s", attempt, self.retries, exc)
+                if attempt < self.retries:
+                    time.sleep(2 ** attempt)
+        raise RuntimeError("HuggingFace embedding API failed for vector store")
+
 
 class VectorStoreService:
     def __init__(self, collection_name: str = "mental_health_knowledge"):
         persist_dir = Path(__file__).parent.parent.parent / "chroma_db"
         persist_dir.mkdir(exist_ok=True)
-        
+
         self.client = chromadb.PersistentClient(path=str(persist_dir))
-        self.embedding_fn = embedding_functions.SentenceTransformerEmbeddingFunction(
-            model_name="paraphrase-multilingual-MiniLM-L12-v2"
-        )
-        
+        self.embedding_fn = HuggingFaceAPIEmbeddingFunction()
+
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
             embedding_function=self.embedding_fn
         )
-        
-        print(f"✅ Vector store initialized: {collection_name}")
-        print(f"   Total documents: {self.collection.count()}")
+
+        logger.info("✅ Vector store initialized: %s (docs: %d)", collection_name, self.collection.count())
+
     
     def add_documents(self, documents: List[str], metadatas: List[Dict] = None):
         ids = [str(uuid.uuid4()) for _ in documents]
