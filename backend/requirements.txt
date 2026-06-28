@@ -47,7 +47,7 @@ langchain-text-splitters==1.1.2
 scikit-learn==1.9.0
 numpy==2.5.0
 pandas==3.0.3
-torch==2.12.1+cpu
+torch==2.12.1
 transformers==5.12.1
 scipy==1.18.0
 
