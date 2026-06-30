@@ -22,7 +22,7 @@ async def run():
     users_col = db["users"]
     transactions_col = db["transactions"]
     
-    email = "sakib@gmail.com"
+    email = "sakib2@gmail.com"
     password = "111111"
     name = "Sakib Hasan"
     hashed = hash_password(password)

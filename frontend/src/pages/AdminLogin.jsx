@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../styles/admin.css';
@@ -8,8 +8,15 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const [rememberMe, setRememberMe] = useState(true);
+  const { login, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user && user.is_admin) {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +24,7 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const result = await login(email, password);
+      const result = await login(email, password, rememberMe);
       if (result.success) {
         navigate('/admin');
       } else {
@@ -68,6 +75,19 @@ const AdminLogin = () => {
             />
           </div>
 
+          <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#10b981' }}
+            />
+            <label htmlFor="rememberMe" style={{ margin: 0, cursor: 'pointer', userSelect: 'none', fontSize: '0.9rem', color: '#a8c0b5' }}>
+              মনে রাখুন (Remember Me)
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -93,3 +113,4 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+
