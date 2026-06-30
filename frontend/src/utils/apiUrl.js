@@ -7,7 +7,7 @@
  *   4. Fallback: localhost:8000
  */
 
-const PRODUCTION_API = 'https://mentora-q60e.onrender.com';
+const PRODUCTION_API = 'https://94f8604771fd2a5c-103-133-254-20.serveousercontent.com';
 
 export const getApiBaseUrl = () => {
   // 1. Always prefer explicitly configured env var (baked in at build time)
