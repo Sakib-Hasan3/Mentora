@@ -7,8 +7,6 @@
  *   4. Fallback: localhost:8000
  */
 
-const PRODUCTION_API = 'https://94f8604771fd2a5c-103-133-254-20.serveousercontent.com';
-
 export const getApiBaseUrl = () => {
   // 1. Always prefer explicitly configured env var (baked in at build time)
   if (process.env.REACT_APP_API_URL) {
@@ -22,7 +20,8 @@ export const getApiBaseUrl = () => {
     if (
       hostname.includes('serveousercontent.com') ||
       hostname.includes('loca.lt') ||
-      hostname.includes('ngrok-free.app')
+      hostname.includes('ngrok-free.app') ||
+      hostname.includes('ngrok-free.dev')
     ) {
       return '/api';
     }
@@ -32,16 +31,11 @@ export const getApiBaseUrl = () => {
       return `${protocol}//${hostname}:8000/api`;
     }
 
-    // 3. Running on Vercel production → use Render backend
-    if (hostname.includes('vercel.app') || hostname.includes('mentora')) {
-      return `${PRODUCTION_API}/api`;
-    }
-
-    // 4. LAN / same-host deployment
+    // 3. Fallback: LAN / same-host deployment
     const portStr = port ? `:${port}` : '';
     return `${protocol}//${hostname}${portStr}/api`;
   }
 
-  return `${PRODUCTION_API}/api`;
+  return '/api';
 };
 

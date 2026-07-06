@@ -105,7 +105,7 @@ app.add_middleware(RequestLoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
-    allow_origin_regex=r"https?://.*\.(serveousercontent\.com|loca\.lt|ngrok-free\.app)",
+    allow_origin_regex=r"https?://.*\.(serveousercontent\.com|loca\.lt|ngrok-free\.app|ngrok-free\.dev)",
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Request-ID"],
