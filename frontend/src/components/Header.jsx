@@ -256,6 +256,13 @@ const Header = () => {
             {/* Mobile Navigation */}
             {showMobileMenu && (
                 <div className="mobile-menu" ref={mobileMenuRef}>
+                    <button 
+                        className="mobile-menu-close"
+                        onClick={() => setShowMobileMenu(false)}
+                        aria-label="Close menu"
+                    >
+                        ✕
+                    </button>
                     <div className="mobile-menu-header">
                         <div className="mobile-user-info">
                             <div className="mobile-user-avatar">

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { getApiBaseUrl } from '../utils/apiUrl';
 import '../styles/login.css';
 
 /* ── Google SVG ── */
@@ -25,31 +26,6 @@ const getStrength = pwd => {
     return { level: 3, label: 'শক্তিশালী 🟢' };
 };
 
-/* ── Google Modal ── */
-const GoogleModal = ({ onSelect, onClose }) => {
-    const accounts = [
-        { name: 'Sakib Hasan', email: 'sakib@gmail.com', color: '#10b981', initial: 'S' },
-        { name: 'Demo User',   email: 'demo.user@gmail.com', color: '#3b82f6', initial: 'D' },
-    ];
-    return (
-        <div className="auth-google-modal-overlay" onClick={onClose}>
-            <div className="auth-google-modal" onClick={e => e.stopPropagation()}>
-                <div className="auth-google-modal-header"><GoogleLogo /><h3>Google দিয়ে সাইন-আপ করুন</h3></div>
-                <p className="auth-google-modal-sub">Mentora অ্যাপ ব্যবহার করতে একটি Google অ্যাকাউন্ট নির্বাচন করুন</p>
-                {accounts.map(acc => (
-                    <button key={acc.email} className="auth-google-account" onClick={() => onSelect(acc.email, acc.name)}>
-                        <div className="auth-google-account-avatar" style={{ background: acc.color }}>{acc.initial}</div>
-                        <div className="auth-google-account-info">
-                            <div className="name">{acc.name}</div>
-                            <div className="email">{acc.email}</div>
-                        </div>
-                    </button>
-                ))}
-                <button className="auth-google-modal-cancel" onClick={onClose}>বাতিল করুন</button>
-            </div>
-        </div>
-    );
-};
 
 /* ── Brand Panel ── */
 const BrandPanel = () => (
@@ -138,7 +114,7 @@ const OTPInput = ({ value, onChange, onComplete }) => {
    SIGNUP PAGE
    ══════════════════════════════════════════════════════════════ */
 const SignupPage = () => {
-    const { signup, user } = useAuth();
+    const { signup, loginWithGoogle, user } = useAuth();
     const navigate = useNavigate();
 
     // Step 1 = form, 2 = OTP verify
@@ -152,7 +128,7 @@ const SignupPage = () => {
     const [loading, setLoading]     = useState(false);
     const [error, setError]         = useState('');
     const [success, setSuccess]     = useState('');
-    const [showGoogle, setShowGoogle] = useState(false);
+
 
     // OTP state
     const [otpValue, setOtpValue]   = useState('      ');
@@ -191,7 +167,7 @@ const SignupPage = () => {
 
     const sendOTP = async () => {
         try {
-            const base = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+            const base = getApiBaseUrl();
             const res = await fetch(`${base}/auth/otp/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -220,7 +196,7 @@ const SignupPage = () => {
         if (code.length !== 6) { setError('৬ সংখ্যার OTP দিন'); return; }
         setLoading(true); setError('');
         try {
-            const base = `${window.location.protocol}//${window.location.hostname}:8000/api`;
+            const base = getApiBaseUrl();
             const res = await fetch(`${base}/auth/otp/verify-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -238,20 +214,14 @@ const SignupPage = () => {
     };
 
     // Google signup
-    const handleGoogle = async (gEmail, gName) => {
-        setShowGoogle(false); setLoading(true);
+    const handleGoogle = async () => {
+        setLoading(true); setError('');
         try {
-            const base = `${window.location.protocol}//${window.location.hostname}:8000/api`;
-            const res = await fetch(`${base}/auth/google`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: gEmail, name: gName }),
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+            const res = await loginWithGoogle();
+            if (res.success) {
                 window.location.href = '/dashboard';
+            } else {
+                setError(res.error || 'Google সাইনআপ ব্যর্থ হয়েছে');
             }
         } catch { setError('Google সাইনআপ ব্যর্থ হয়েছে'); }
         setLoading(false);
@@ -260,7 +230,6 @@ const SignupPage = () => {
     return (
         <div className="auth-root">
             <BrandPanel />
-            {showGoogle && <GoogleModal onSelect={handleGoogle} onClose={() => setShowGoogle(false)} />}
 
             <div className="auth-form-panel">
                 <div className="auth-card">
@@ -382,7 +351,7 @@ const SignupPage = () => {
 
                             <div className="auth-divider">অথবা</div>
 
-                            <button className="auth-google-btn" onClick={() => setShowGoogle(true)}>
+                            <button className="auth-google-btn" onClick={handleGoogle}>
                                 <GoogleLogo /> Google দিয়ে সাইন-আপ করুন
                             </button>
 

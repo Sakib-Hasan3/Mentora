@@ -11,10 +11,7 @@ load_dotenv()
 MONGO_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
 DB_NAME = os.getenv("DATABASE_NAME", "mental_health_db")
 
-def hash_password(password: str) -> str:
-    salt = secrets.token_hex(16)
-    hashed = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
-    return f"{salt}${hashed.hex()}"
+from core.security import hash_password
 
 async def run():
     client = AsyncIOMotorClient(MONGO_URL)
@@ -22,7 +19,7 @@ async def run():
     users_col = db["users"]
     transactions_col = db["transactions"]
     
-    email = "sakib2@gmail.com"
+    email = "sakib@gmail.com"
     password = "111111"
     name = "Sakib Hasan"
     hashed = hash_password(password)

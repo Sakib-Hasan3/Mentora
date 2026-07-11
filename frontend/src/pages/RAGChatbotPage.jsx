@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import '../styles/rag-chatbot-page.css';
 
 const RAGChatbotPage = () => {
     const { user } = useAuth();
@@ -54,7 +55,7 @@ const RAGChatbotPage = () => {
             console.error('RAG error:', error);
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: 'দুঃখিত, সার্ভারে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।',
+                content: 'দুঃখিত, সার্ভারে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।',
                 time: new Date(),
                 isError: true
             }]);
@@ -86,40 +87,36 @@ const RAGChatbotPage = () => {
     const quickQuestions = [
         { icon: '🧠', text: 'মানসিক স্বাস্থ্য বজায় রাখার উপায়?' },
         { icon: '😰', text: 'প্যানিক অ্যাটাক হলে কী করবো?' },
-        { icon: '💊', text: 'এন্টিডিপ্রেসেন্ট ওষুধের প্রভাব কী?' },
-        { icon: '🏃', text: 'ব্যায়াম কি মানসিক স্বাস্থ্য উন্নত করে?' },
-        { icon: '🧘', text: 'মাইন্ডফুলনেস মেডিটেশন কী?' },
-        { icon: '👨‍👩‍👧', text: 'পারিবারিক সমস্যায় মানসিক সহায়তা' }
+        { icon: '💊', text: 'এন্টিডিপ্রেসেন্ট ওষুধের পার্শ্বপ্রতিক্রিয়া?' }
     ];
 
     if (!isPaid) {
         return (
-            <div style={paywall.container}>
-                <div style={paywall.card}>
-                    <div style={paywall.iconBig}>🔒</div>
-                    <h1 style={paywall.title}>RAG চ্যাটবট — প্রিমিয়াম ফিচার</h1>
-                    <p style={paywall.desc}>
+            <div className="rag-paywall-container">
+                <div className="rag-paywall-card">
+                    <h1 className="rag-paywall-title">RAG চ্যাটবট — প্রিমিয়াম ফিচার</h1>
+                    <p className="rag-paywall-desc">
                         RAG (Retrieval-Augmented Generation) চ্যাটবট আমাদের মানসিক স্বাস্থ্য ডকুমেন্ট থেকে
-                        তথ্য খুঁজে সঠিক ও বিস্তারিত উত্তর দেয়। এটি শুধুমাত্র Premium সদস্যদের জন্য।
+                        তথ্য খুঁজে সঠিক ও বিস্তারিত উত্তর দেয়। এটি শুধুমাত্র Premium সদস্যদের জন্য।
                     </p>
-                    <div style={paywall.features}>
-                        {['📚 মানসিক স্বাস্থ্য ডেটাবেজ থেকে তথ্য', '🎯 সঠিক ও উৎস-ভিত্তিক উত্তর', '🔬 বৈজ্ঞানিক তথ্যের রেফারেন্স', '💾 চ্যাট হিস্ট্রি সেভ'].map((f, i) => (
-                            <div key={i} style={paywall.featureItem}>
-                                <span style={paywall.check}>✓</span> {f}
+                    <div className="rag-paywall-features">
+                        {['📖 মানসিক স্বাস্থ্য ডাটাবেজ থেকে তথ্য', '🎯 সঠিক ও উৎস-ভিত্তিক উত্তর', '🔬 বৈজ্ঞানিক তথ্যের রেফারেন্স', '💾 চ্যাট হিস্ট্রি সেভ'].map((f, i) => (
+                            <div key={i} className="rag-paywall-feature-item">
+                                <span className="rag-paywall-check">✓</span> {f}
                             </div>
                         ))}
                     </div>
-                    <div style={paywall.pricing}>
-                        <div style={paywall.price}>৳২৯৯ <span style={paywall.period}>/মাস</span></div>
-                        <div style={paywall.priceSub}>বা ৳২,৪৯৯/বছর (৩০% সাশ্রয়)</div>
+                    <div className="rag-paywall-pricing">
+                        <div className="rag-paywall-price">৳২৯৯ <span className="rag-paywall-period">/মাস</span></div>
+                        <div className="rag-paywall-price-sub">বা ৳২,৪৯৯/বছর (৩০% সাশ্রয়)</div>
                     </div>
-                    <button onClick={() => navigate('/pricing')} style={paywall.upgradeBtn}>
+                    <button onClick={() => navigate('/pricing')} className="rag-paywall-upgrade-btn">
                         👑 এখনই আপগ্রেড করুন
                     </button>
-                    <button onClick={() => navigate('/support')} style={paywall.freeBtn}>
+                    <button onClick={() => navigate('/support')} className="rag-paywall-free-btn">
                         বিনামূল্যে ২৪/৭ চ্যাট ব্যবহার করুন →
                     </button>
-                    <button onClick={() => navigate('/dashboard')} style={paywall.backBtn}>
+                    <button onClick={() => navigate('/dashboard')} className="rag-paywall-back-btn">
                         ← ড্যাশবোর্ডে ফিরুন
                     </button>
                 </div>
@@ -128,64 +125,64 @@ const RAGChatbotPage = () => {
     }
 
     return (
-        <div style={{...styles.container, paddingTop: '70px'}}>
+        <div className="rag-chat-container" style={{paddingTop: '70px'}}>
             <Header />
             {/* Sidebar */}
-            <div style={{ ...styles.sidebar, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
-                <div style={styles.sidebarHeader}>
-                    <h3 style={styles.sidebarTitle}>📋 চ্যাট হিস্ট্রি</h3>
-                    <button onClick={() => setSidebarOpen(false)} style={styles.closeBtn}>✕</button>
+            <div className="rag-chat-sidebar" style={{ transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
+                <div className="rag-chat-sidebar-header">
+                    <h3 className="rag-chat-sidebar-title">📋 চ্যাট হিস্ট্রি</h3>
+                    <button onClick={() => setSidebarOpen(false)} className="rag-chat-close-btn">✖</button>
                 </div>
-                <button onClick={startNewChat} style={styles.newChatSideBtn}>+ নতুন চ্যাট</button>
-                <div style={styles.sessionList}>
+                <button onClick={startNewChat} className="rag-chat-new-chat-side-btn">+ নতুন চ্যাট</button>
+                <div className="rag-chat-session-list">
                     {sessions.map((s, i) => (
-                        <div key={i} style={styles.sessionItem}>
-                            <div style={styles.sessionPreview}>{s.preview}</div>
-                            <div style={styles.sessionTime}>{s.time?.toLocaleDateString('bn-BD')}</div>
+                        <div key={i} className="rag-chat-session-item">
+                            <div className="rag-chat-session-preview">{s.preview}</div>
+                            <div className="rag-chat-session-time">{s.time?.toLocaleDateString('bn-BD')}</div>
                         </div>
                     ))}
                     {sessions.length === 0 && (
-                        <p style={styles.noHistory}>কোনো পুরনো চ্যাট নেই</p>
+                        <p className="rag-chat-no-history">কোনো পুরনো চ্যাট নেই</p>
                     )}
                 </div>
             </div>
-            {sidebarOpen && <div style={styles.overlay} onClick={() => setSidebarOpen(false)} />}
+            {sidebarOpen && <div className="rag-chat-overlay" onClick={() => setSidebarOpen(false)} />}
 
             {/* Header */}
-            <div style={styles.header}>
-                <div style={styles.headerLeft}>
-                    <button onClick={() => setSidebarOpen(true)} style={styles.menuBtn}>☰</button>
-                    <button onClick={() => navigate('/dashboard')} style={styles.backBtn}>← ড্যাশবোর্ড</button>
-                    <div style={styles.headerInfo}>
-                        <div style={styles.ragAvatar}>🧠</div>
+            <div className="rag-chat-header">
+                <div className="rag-chat-header-left">
+                    <button onClick={() => setSidebarOpen(true)} className="rag-chat-menu-btn">☰</button>
+                    <button onClick={() => navigate('/dashboard')} className="rag-chat-back-btn">← ড্যাশবোর্ড</button>
+                    <div className="rag-chat-header-info">
+                        <div className="rag-chat-avatar">🧠</div>
                         <div>
-                            <h2 style={styles.headerTitle}>RAG চ্যাটবট</h2>
-                            <div style={styles.headerSub}>
-                                <span style={styles.onlineDot}></span>
-                                <span style={styles.onlineText}>নলেজ বেজ থেকে উত্তর দিচ্ছে</span>
-                                <span style={styles.paidBadge}>👑 Premium</span>
+                            <h2 className="rag-chat-header-title">RAG চ্যাটবট</h2>
+                            <div className="rag-chat-header-sub">
+                                <span className="rag-chat-online-dot"></span>
+                                <span className="rag-chat-online-text">নলেজ বেস থেকে উত্তর দিচ্ছে</span>
+                                <span className="rag-chat-paid-badge">👑 Premium</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button onClick={startNewChat} style={styles.newChatBtn}>+ নতুন চ্যাট</button>
+                <button onClick={startNewChat} className="rag-chat-new-chat-btn">+ নতুন চ্যাট</button>
             </div>
 
             {/* Messages */}
-            <div style={styles.messagesArea}>
+            <div className="rag-chat-messages-area">
                 {messages.length === 0 && (
-                    <div style={styles.emptyState}>
-                        <div style={styles.emptyIcon}>🧠</div>
-                        <h2 style={styles.emptyTitle}>RAG চ্যাটবট স্বাগত জানাচ্ছে!</h2>
-                        <p style={styles.emptyDesc}>
-                            আমি মানসিক স্বাস্থ্য বিষয়ক ডকুমেন্ট থেকে তথ্য খুঁজে আপনার প্রশ্নের উত্তর দেই।
+                    <div className="rag-chat-empty-state">
+                        <div className="rag-chat-empty-icon">🧠</div>
+                        <h2 className="rag-chat-empty-title">RAG চ্যাটবট স্বাগত জানাচ্ছে!</h2>
+                        <p className="rag-chat-empty-desc">
+                            আমি মানসিক স্বাস্থ্য বিষয়ক ডকুমেন্ট থেকে তথ্য খুঁজে আপনার প্রশ্নের উত্তর দেই।
                         </p>
-                        <div style={styles.quickGrid}>
+                        <div className="rag-chat-quick-grid">
                             {quickQuestions.map((q, idx) => (
-                                <button key={idx} style={styles.quickBtn}
+                                <button key={idx} className="rag-chat-quick-btn"
                                     onClick={() => { setInput(q.text); inputRef.current?.focus(); }}>
                                     <span>{q.icon}</span>
-                                    <span style={styles.quickText}>{q.text}</span>
+                                    <span className="rag-chat-quick-text">{q.text}</span>
                                 </button>
                             ))}
                         </div>
@@ -193,22 +190,18 @@ const RAGChatbotPage = () => {
                 )}
 
                 {messages.map((msg, idx) => (
-                    <div key={idx} style={{
-                        ...styles.msgRow,
+                    <div key={idx} className="rag-chat-msg-row" style={{
                         flexDirection: msg.role === 'user' ? 'row-reverse' : 'row'
                     }}>
-                        <div style={msg.role === 'user' ? styles.userAvatar : styles.botAvatar}>
+                        <div className={msg.role === 'user' ? "rag-chat-user-avatar" : "rag-chat-bot-avatar"}>
                             {msg.role === 'user' ? (user?.name?.charAt(0) || 'আ') : '🧠'}
                         </div>
-                        <div style={{
-                            ...styles.bubble,
-                            ...(msg.role === 'user' ? styles.userBubble : styles.botBubble)
-                        }}>
-                            <p style={styles.bubbleText}>{msg.content}</p>
+                        <div className={`rag-chat-bubble ${msg.role === 'user' ? "rag-chat-user-bubble" : "rag-chat-bot-bubble"}`}>
+                            <p className="rag-chat-bubble-text">{msg.content}</p>
                             {msg.context_used && (
-                                <div style={styles.sourceBadge}>📚 নলেজ বেজ থেকে সংগ্রহ করা</div>
+                                <div className="rag-chat-source-badge">📖 নলেজ বেস থেকে সংগ্রহ করা</div>
                             )}
-                            <span style={styles.timeText}>
+                            <span className="rag-chat-time-text">
                                 {msg.time && new Date(msg.time).toLocaleTimeString('bn-BD', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
@@ -216,13 +209,13 @@ const RAGChatbotPage = () => {
                 ))}
 
                 {typing && (
-                    <div style={{ ...styles.msgRow, flexDirection: 'row' }}>
-                        <div style={styles.botAvatar}>🧠</div>
-                        <div style={{ ...styles.bubble, ...styles.botBubble }}>
-                            <div style={styles.typing}>
-                                <span style={styles.dot}></span>
-                                <span style={styles.dot}></span>
-                                <span style={styles.dot}></span>
+                    <div className="rag-chat-msg-row" style={{ flexDirection: 'row' }}>
+                        <div className="rag-chat-bot-avatar">🧠</div>
+                        <div className="rag-chat-bubble rag-chat-bot-bubble">
+                            <div className="rag-chat-typing">
+                                <span className="rag-chat-dot"></span>
+                                <span className="rag-chat-dot"></span>
+                                <span className="rag-chat-dot"></span>
                             </div>
                         </div>
                     </div>
@@ -231,35 +224,31 @@ const RAGChatbotPage = () => {
             </div>
 
             {/* Input */}
-            <div style={styles.inputArea}>
-                <div style={styles.inputWrapper}>
+            <div className="rag-chat-input-area">
+                <div className="rag-chat-input-wrapper">
                     <textarea
                         ref={inputRef}
                         value={input}
                         onChange={e => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="মানসিক স্বাস্থ্য বিষয়ে প্রশ্ন করুন... (Enter পাঠান)"
-                        style={styles.textarea}
+                        placeholder="মানসিক স্বাস্থ্য বিষয়ে প্রশ্ন করুন... (Enter পাঠান)"
+                        className="rag-chat-textarea"
                         rows={2}
                         disabled={loading}
                     />
                     <button onClick={sendMessage} disabled={loading || !input.trim()}
-                        style={{ ...styles.sendBtn, opacity: loading || !input.trim() ? 0.5 : 1 }}>
+                        className="rag-chat-send-btn"
+                        style={{ opacity: loading || !input.trim() ? 0.5 : 1 }}>
                         {loading ? '⏳' : '➤'}
                     </button>
                 </div>
-                <p style={styles.disclaimer}>
-                    ⚠️ RAG চ্যাটবট পেশাদার চিকিৎসার বিকল্প নয়।
-                    <button onClick={() => navigate('/consultants')} style={styles.consultLink}>
+                <p className="rag-chat-disclaimer">
+                    ⚠️ RAG চ্যাটবট পেশাদার চিকিৎসার বিকল্প নয়।
+                    <button onClick={() => navigate('/consultants')} className="rag-chat-consult-link">
                         বিশেষজ্ঞের সাথে কথা বলুন →
                     </button>
                 </p>
             </div>
-
-            <style>{`
-                @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
-                @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
-            `}</style>
         </div>
     );
 };

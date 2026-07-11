@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { getApiBaseUrl } from '../utils/apiUrl';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider, isFirebaseConfigured } from '../utils/firebase';
 
 const AuthContext = createContext({});
 
@@ -150,12 +152,27 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const loginWithGoogle = async (email, name, rememberMe = true) => {
+    const loginWithGoogle = async (rememberMe = true) => {
         try {
+            let idToken = '';
+            
+            if (!isFirebaseConfigured()) {
+                // Developer Fallback Mode
+                const devEmail = prompt("Firebase configuration is not set. Enter a test email for developer login:", "test@mentora.com");
+                if (!devEmail) return { success: false, error: 'লগইন বাতিল করা হয়েছে' };
+                const devName = devEmail.split('@')[0];
+                idToken = `dev-token-${devEmail}:${devName}`;
+            } else {
+                // Production-level Google sign-in using Firebase
+                const result = await signInWithPopup(auth, googleProvider);
+                const firebaseUser = result.user;
+                idToken = await firebaseUser.getIdToken();
+            }
+
             const res = await fetch(`${getApiBaseUrl()}/auth/google`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, name })
+                body: JSON.stringify({ token: idToken })
             });
             const data = await res.json();
             if (res.ok && data.success) {
@@ -168,7 +185,8 @@ export const AuthProvider = ({ children }) => {
             const errorMsg = typeof errorDetail === 'string' ? errorDetail : JSON.stringify(errorDetail);
             return { success: false, error: errorMsg };
         } catch (error) {
-            return { success: false, error: 'সার্ভারে সংযোগ করতে পারেনি' };
+            console.error("Google login error:", error);
+            return { success: false, error: error.message || 'Google লগইন ব্যর্থ হয়েছে' };
         }
     };
 

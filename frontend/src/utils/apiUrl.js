@@ -26,8 +26,8 @@ export const getApiBaseUrl = () => {
       return '/api';
     }
 
-    // 2. Local dev server (CRA default port)
-    if (port === '3000') {
+    // 2. Local dev server (CRA default port or other standard dev server ports like 3001)
+    if (['3000', '3001', '3002', '3003', '3004', '3005'].includes(port)) {
       return `${protocol}//${hostname}:8000/api`;
     }
 

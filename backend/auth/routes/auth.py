@@ -7,16 +7,13 @@ from datetime import datetime
 from core.database import db
 from core.security import create_token
 from auth.routes.auth_otp import router as otp_router
+from core.config import settings
+from auth.services.firebase_auth import verify_firebase_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 # Include OTP routes nested inside /auth prefix
 router.include_router(otp_router)
-
-class GoogleLoginRequest(BaseModel):
-    email: str
-    name: str
-    token: Optional[str] = None
 
 @router.post("/signup")
 async def signup(user_data: SignupRequest):
@@ -32,18 +29,52 @@ async def login(login_data: LoginRequest):
         raise HTTPException(status_code=401, detail=result["message"])
     return result
 
+class GoogleLoginRequest(BaseModel):
+    token: str
+
 @router.post("/google")
 async def google_login(data: GoogleLoginRequest):
-    email_lower = data.email.lower().strip()
+    token = data.token
+    
+    # 1. Dev mode fallback check
+    if settings.is_development and token.startswith("dev-token-"):
+        # Format: dev-token-email:name
+        try:
+            parts = token.replace("dev-token-", "").split(":")
+            email_lower = parts[0].lower().strip()
+            name = parts[1] if len(parts) > 1 else email_lower.split("@")[0]
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid developer token format.")
+    else:
+        # Real Firebase token validation
+        if not settings.FIREBASE_PROJECT_ID:
+            raise HTTPException(
+                status_code=500,
+                detail="Firebase Project ID is not configured on the server."
+            )
+        
+        payload = await verify_firebase_token(token, settings.FIREBASE_PROJECT_ID)
+        if not payload:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="গুগল সাইন-ইন যাচাই করা ব্যর্থ হয়েছে"
+            )
+            
+        email_lower = payload.get("email", "").lower().strip()
+        name = payload.get("name", "Google User")
+
     if not email_lower:
-        raise HTTPException(status_code=400, detail="ইমেইল প্রয়োজন")
+        raise HTTPException(
+            status_code=400,
+            detail="গুগল অ্যাকাউন্ট থেকে ইমেল পাওয়া যায়নি"
+        )
         
     user = await db.get_collection("users").find_one({"email": email_lower})
     
     if not user:
         # Register user on the fly if this email does not exist
         user_doc = {
-            "name": data.name,
+            "name": name,
             "email": email_lower,
             "hashed_password": "",  # Passwordless login
             "is_active": True,
@@ -56,19 +87,21 @@ async def google_login(data: GoogleLoginRequest):
         user["_id"] = result.inserted_id
         
     user_id = str(user["_id"])
-    token = create_token({"sub": user_id, "email": user["email"]})
+    token_str = create_token({"sub": user_id, "email": user["email"]})
     
     return {
         "success": True,
         "message": "গুগল লগইন সফল হয়েছে!",
-        "token": token,
+        "token": token_str,
         "user": {
             "id": user_id,
             "name": user.get("name"),
             "email": user.get("email"),
             "is_active": user.get("is_active", True),
             "user_type": user.get("user_type", "free"),
+            "subscription": user.get("subscription", "free"),
             "is_admin": user.get("is_admin", False)
         }
     }
+
 

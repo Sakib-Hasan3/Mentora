@@ -27,34 +27,6 @@ const getStrength = pwd => {
     return { level: 3, label: 'শক্তিশালী' };
 };
 
-/* ── Google account picker modal ── */
-const GoogleModal = ({ onSelect, onClose }) => {
-    const accounts = [
-        { name: 'Sakib Hasan',  email: 'sakibnghs123@gmail.com',      color: '#10b981', initial: 'S' },
-        { name: 'Sakib',    email: 'Ug2102052@cse.pstu.ac.bd',  color: '#3b82f6', initial: 'D' },
-    ];
-    return (
-        <div className="auth-google-modal-overlay" onClick={onClose}>
-            <div className="auth-google-modal" onClick={e => e.stopPropagation()}>
-                <div className="auth-google-modal-header">
-                    <GoogleLogo />
-                    <h3>Google দিয়ে সাইন-ইন করুন</h3>
-                </div>
-                <p className="auth-google-modal-sub">Mentora অ্যাপ ব্যবহার করতে একটি Google অ্যাকাউন্ট নির্বাচন করুন</p>
-                {accounts.map(acc => (
-                    <button key={acc.email} className="auth-google-account" onClick={() => onSelect(acc.email, acc.name)}>
-                        <div className="auth-google-account-avatar" style={{ background: acc.color }}>{acc.initial}</div>
-                        <div className="auth-google-account-info">
-                            <div className="name">{acc.name}</div>
-                            <div className="email">{acc.email}</div>
-                        </div>
-                    </button>
-                ))}
-                <button className="auth-google-modal-cancel" onClick={onClose}>বাতিল করুন</button>
-            </div>
-        </div>
-    );
-};
 
 /* ── Brand Panel ── */
 const BrandPanel = () => (
@@ -109,7 +81,6 @@ const LoginPage = () => {
     const [rememberMe, setRemember] = useState(true);
     const [loading, setLoading]     = useState(false);
     const [error, setError]         = useState('');
-    const [showGoogle, setShowGoogle] = useState(false);
 
     useEffect(() => { if (user) navigate('/dashboard'); }, [user, navigate]);
 
@@ -123,19 +94,14 @@ const LoginPage = () => {
         else setError(res.error || 'লগইন ব্যর্থ হয়েছে');
     };
 
-    const handleGoogle = async (gEmail, gName) => {
-        setShowGoogle(false); setLoading(true);
+    const handleGoogle = async () => {
+        setLoading(true); setError('');
         try {
-            const res = await fetch(`${window.location.protocol}//${window.location.hostname}:8000/api/auth/google`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: gEmail, name: gName }),
-            });
-            const data = await res.json();
-            if (data.success) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
+            const res = await loginWithGoogle(rememberMe);
+            if (res.success) {
                 window.location.href = '/dashboard';
+            } else {
+                setError(res.error || 'Google লগইন ব্যর্থ হয়েছে');
             }
         } catch { setError('Google লগইন ব্যর্থ হয়েছে'); }
         setLoading(false);
@@ -144,7 +110,6 @@ const LoginPage = () => {
     return (
         <div className="auth-root">
             <BrandPanel />
-            {showGoogle && <GoogleModal onSelect={handleGoogle} onClose={() => setShowGoogle(false)} />}
 
             <div className="auth-form-panel">
                 <div className="auth-card">
@@ -198,7 +163,7 @@ const LoginPage = () => {
 
                     <div className="auth-divider">অথবা</div>
 
-                    <button className="auth-google-btn" onClick={() => setShowGoogle(true)}>
+                    <button className="auth-google-btn" onClick={handleGoogle}>
                         <GoogleLogo /> Google দিয়ে লগইন করুন
                     </button>
 

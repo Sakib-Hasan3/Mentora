@@ -30,6 +30,13 @@ class HuggingFaceAPIEmbeddingFunction(EmbeddingFunction):
         return "sentence_transformer"
 
     def __call__(self, input: Documents) -> Embeddings:
+        import socket
+        try:
+            socket.gethostbyname("api-inference.huggingface.co")
+        except socket.gaierror:
+            logger.error("HuggingFace API host is not resolvable. Failing fast.")
+            raise RuntimeError("HuggingFace embedding API failed for vector store in query.")
+            
         payload = {"inputs": list(input), "options": {"wait_for_model": True}}
         for attempt in range(1, self.retries + 1):
             try:
@@ -75,29 +82,40 @@ class VectorStoreService:
         if metadatas is None:
             metadatas = [{"source": "knowledge_base"} for _ in documents]
         
-        self.collection.add(
-            documents=documents,
-            ids=ids,
-            metadatas=metadatas
-        )
-        return ids
+        try:
+            self.collection.add(
+                documents=documents,
+                ids=ids,
+                metadatas=metadatas
+            )
+            return ids
+        except Exception as e:
+            logger.error("Error adding documents to vector store: %s", e)
+            return []
     
     def search(self, query: str, k: int = 5) -> List[Dict]:
-        results = self.collection.query(query_texts=[query], n_results=k)
-        
-        if results and results['documents']:
-            docs = []
-            for i, doc in enumerate(results['documents'][0]):
-                docs.append({
-                    "text": doc,
-                    "metadata": results['metadatas'][0][i] if results['metadatas'] else {},
-                    "distance": results['distances'][0][i] if results['distances'] else None
-                })
-            return docs
+        try:
+            results = self.collection.query(query_texts=[query], n_results=k)
+            
+            if results and results['documents']:
+                docs = []
+                for i, doc in enumerate(results['documents'][0]):
+                    docs.append({
+                        "text": doc,
+                        "metadata": results['metadatas'][0][i] if results['metadatas'] else {},
+                        "distance": results['distances'][0][i] if results['distances'] else None
+                    })
+                return docs
+        except Exception as e:
+            logger.error("Error searching vector store: %s", e)
         return []
     
     def get_all_documents(self) -> List[str]:
-        all_data = self.collection.get()
-        return all_data['documents'] if all_data else []
+        try:
+            all_data = self.collection.get()
+            return all_data['documents'] if all_data else []
+        except Exception as e:
+            logger.error("Error getting all documents from vector store: %s", e)
+            return []
 
 vector_store = VectorStoreService()
