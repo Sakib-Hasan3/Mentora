@@ -12,10 +12,10 @@ from books.schemas.books import (
 
 router = APIRouter(prefix="/books", tags=["Books & Resources"])
 
-BOOKS_COLLECTION = "books"
-ARTICLES_COLLECTION = "articles"
-VIDEOS_COLLECTION = "videos"
-QUOTES_COLLECTION = "quotes"
+BOOKS_COLLECTION = "cms_content"
+ARTICLES_COLLECTION = "cms_content"
+VIDEOS_COLLECTION = "cms_content"
+QUOTES_COLLECTION = "cms_content"
 
 # ========== BOOKS ==========
 @router.get("/books", response_model=BooksListResponse)
@@ -26,7 +26,7 @@ async def get_books(
     search: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    query = {"type": "book"}
+    query = {"type": "book", "is_published": {"$ne": False}}
     
     if category:
         query["category"] = category
@@ -71,7 +71,7 @@ async def get_articles(
     category: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    query = {"type": "article"}
+    query = {"type": "article", "is_published": {"$ne": False}}
     if category:
         query["category"] = category
     
@@ -109,7 +109,7 @@ async def get_videos(
     category: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    query = {"type": "video"}
+    query = {"type": "video", "is_published": {"$ne": False}}
     if category:
         query["category"] = category
     
@@ -134,7 +134,7 @@ async def get_quotes(
     category: Optional[str] = None,
     current_user: dict = Depends(get_current_user)
 ):
-    query = {"type": "quote"}
+    query = {"type": "quote", "is_published": {"$ne": False}}
     if category:
         query["category"] = category
     

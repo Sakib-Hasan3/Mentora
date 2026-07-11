@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from typing import List, Dict, Optional
 
@@ -31,11 +30,11 @@ class BookModel:
             "author": book.get("author"),
             "category": book.get("category"),
             "type": book.get("type"),
-            "description": book.get("description"),
-            "description_bn": book.get("description_bn"),
-            "cover_image": book.get("cover_image"),
-            "file_url": book.get("file_url"),
-            "read_count": book.get("read_count", 0),
+            "description": book.get("content") or book.get("description"),
+            "description_bn": book.get("content_bn") or book.get("description_bn"),
+            "cover_image": book.get("image_url") or book.get("cover_image") or "/books/default.jpg",
+            "file_url": book.get("source") or book.get("file_url"),
+            "read_count": book.get("read_count") or book.get("views", 0),
             "likes": book.get("likes", 0),
             "rating": book.get("rating", 0),
             "tags": book.get("tags", [])
@@ -52,7 +51,7 @@ class ArticleModel:
             "type": "article",
             "content": data.get("content"),
             "content_bn": data.get("content_bn", data.get("content")),
-            "excerpt": data.get("excerpt", data.get("content")[:150]),
+            "excerpt": data.get("excerpt", data.get("content")[:150] if data.get("content") else ""),
             "cover_image": data.get("cover_image", "/articles/default.jpg"),
             "read_time": data.get("read_time", 5),
             "read_count": 0,
@@ -63,6 +62,7 @@ class ArticleModel:
     
     @staticmethod
     def from_db(article: Dict) -> Dict:
+        content = article.get("content") or ""
         return {
             "id": str(article["_id"]),
             "title": article.get("title"),
@@ -70,12 +70,12 @@ class ArticleModel:
             "author": article.get("author"),
             "category": article.get("category"),
             "type": article.get("type"),
-            "content": article.get("content"),
+            "content": content,
             "content_bn": article.get("content_bn"),
-            "excerpt": article.get("excerpt"),
-            "cover_image": article.get("cover_image"),
+            "excerpt": article.get("excerpt") or content[:150],
+            "cover_image": article.get("image_url") or article.get("cover_image") or "/articles/default.jpg",
             "read_time": article.get("read_time", 5),
-            "read_count": article.get("read_count", 0),
+            "read_count": article.get("read_count") or article.get("views", 0),
             "likes": article.get("likes", 0),
             "tags": article.get("tags", [])
         }
@@ -106,14 +106,14 @@ class VideoModel:
             "id": str(video["_id"]),
             "title": video.get("title"),
             "title_bn": video.get("title_bn"),
-            "channel": video.get("channel"),
+            "channel": video.get("author") or video.get("channel") or "Mentora",
             "category": video.get("category"),
             "type": video.get("type"),
-            "youtube_url": video.get("youtube_url"),
-            "duration": video.get("duration"),
-            "description": video.get("description"),
-            "description_bn": video.get("description_bn"),
-            "thumbnail": video.get("thumbnail"),
+            "youtube_url": video.get("video_url") or video.get("youtube_url"),
+            "duration": video.get("duration") or "10:00",
+            "description": video.get("content") or video.get("description"),
+            "description_bn": video.get("content_bn") or video.get("description_bn"),
+            "thumbnail": video.get("image_url") or video.get("thumbnail"),
             "views": video.get("views", 0),
             "likes": video.get("likes", 0),
             "tags": video.get("tags", [])
@@ -137,8 +137,8 @@ class QuoteModel:
     def from_db(quote: Dict) -> Dict:
         return {
             "id": str(quote["_id"]),
-            "text": quote.get("text"),
-            "text_bn": quote.get("text_bn"),
+            "text": quote.get("content") or quote.get("text"),
+            "text_bn": quote.get("content_bn") or quote.get("text_bn"),
             "author": quote.get("author"),
             "category": quote.get("category"),
             "type": quote.get("type"),
