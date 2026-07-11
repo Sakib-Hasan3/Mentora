@@ -467,6 +467,7 @@
 }
 
 .mobile-menu-header {
+    padding-top: 2.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 1.5rem;
@@ -557,7 +558,7 @@
 }
 
 /* Responsive */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .header-nav {
         display: none;
     }
