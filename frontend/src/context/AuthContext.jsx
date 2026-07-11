@@ -76,12 +76,37 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedAuth = readStoredAuth();
-        if (storedAuth?.token && storedAuth?.user) {
-            setToken(storedAuth.token);
-            setUser(storedAuth.user);
-        }
-        setLoading(false);
+        const initializeAuth = async () => {
+            const storedAuth = readStoredAuth();
+            if (storedAuth?.token && storedAuth?.user) {
+                setToken(storedAuth.token);
+                setUser(storedAuth.user);
+                
+                // Fetch the latest profile data from backend to sync any upgrades (e.g. admin actions)
+                try {
+                    const res = await fetch(`${getApiBaseUrl()}/auth/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${storedAuth.token}`
+                        }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success && data.user) {
+                            setUser(data.user);
+                            persistAuth({
+                                token: storedAuth.token,
+                                user: data.user,
+                                rememberMe: storedAuth.rememberMe
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to sync user session:', error);
+                }
+            }
+            setLoading(false);
+        };
+        initializeAuth();
     }, []);
 
     const signup = async (name, email, password, rememberMe = true, persistSession = true) => {

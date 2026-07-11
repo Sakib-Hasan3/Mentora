@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
 from auth.schemas.auth import SignupRequest, LoginRequest
 from auth.services.auth_service import AuthService
 from pydantic import BaseModel
@@ -9,6 +9,7 @@ from core.security import create_token
 from auth.routes.auth_otp import router as otp_router
 from core.config import settings
 from auth.services.firebase_auth import verify_firebase_token
+from auth.dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -116,6 +117,21 @@ async def google_login(data: GoogleLoginRequest):
             "user_type": user.get("user_type", "free"),
             "subscription": user.get("subscription", "free"),
             "is_admin": user.get("is_admin", False)
+        }
+    }
+
+@router.get("/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    return {
+        "success": True,
+        "user": {
+            "id": current_user["id"],
+            "name": current_user.get("name"),
+            "email": current_user.get("email"),
+            "is_active": current_user.get("is_active", True),
+            "user_type": current_user.get("user_type", "free"),
+            "subscription": current_user.get("subscription", "free"),
+            "is_admin": current_user.get("is_admin", False)
         }
     }
 
