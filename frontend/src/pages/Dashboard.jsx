@@ -462,186 +462,215 @@ const Dashboard = () => {
 
             <style>{`
                 .quick-assessment-banner {
-                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.08));
-                    border: 1px solid rgba(16, 185, 129, 0.3);
-                    border-radius: 16px;
-                    padding: 1rem 1.5rem;
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(234, 88, 12, 0.04));
+                    border: 1px solid rgba(245, 158, 11, 0.22);
+                    border-radius: 20px;
+                    padding: 1.25rem 1.75rem;
                     margin-bottom: 2rem;
-                    transition: all 0.3s;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
                 }
                 .quick-assessment-banner:hover {
                     transform: translateY(-2px);
-                    background: rgba(16, 185, 129, 0.2);
+                    background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(234, 88, 12, 0.08));
+                    border-color: rgba(245, 158, 11, 0.35);
+                    box-shadow: 0 12px 30px rgba(245, 158, 11, 0.15);
                 }
                 .quick-assessment-content {
                     display: flex;
                     align-items: center;
-                    gap: 1rem;
+                    gap: 1.25rem;
                 }
                 .quick-assessment-icon {
-                    font-size: 2rem;
+                    font-size: 2.20rem;
+                    filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.3));
                 }
                 .quick-assessment-text {
                     flex: 1;
                 }
                 .quick-assessment-text h3 {
-                    color: #10b981;
-                    font-size: 1.1rem;
-                    margin-bottom: 0.25rem;
+                    color: #fbbf24;
+                    font-size: 1.15rem;
+                    margin-bottom: 0.3rem;
+                    font-weight: 700;
                 }
                 .quick-assessment-text p {
-                    color: #a8c0b5;
-                    font-size: 0.85rem;
+                    color: #94a3b8;
+                    font-size: 0.88rem;
                 }
                 .quick-assessment-arrow {
-                    color: #10b981;
-                    font-size: 1.5rem;
+                    color: #fbbf24;
+                    font-size: 1.6rem;
+                    transition: transform 0.3s;
+                }
+                .quick-assessment-banner:hover .quick-assessment-arrow {
+                    transform: translateX(4px);
                 }
                 .new-badge {
                     background: #ef4444;
                     color: white;
                     font-size: 0.6rem;
-                    padding: 0.1rem 0.3rem;
+                    padding: 0.15rem 0.4rem;
                     border-radius: 4px;
-                    margin-left: 0.3rem;
+                    margin-left: 0.4rem;
+                    font-weight: 700;
                 }
 
                 /* Assessment History Section */
                 .assessment-history-section {
-                    background: rgba(255, 255, 255, 0.03);
-                    border: 1px solid rgba(255, 255, 255, 0.08);
-                    border-radius: 16px;
-                    padding: 1.5rem;
+                    background: rgba(17, 24, 39, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    border-radius: 24px;
+                    padding: 2rem;
                     margin-top: 2rem;
+                    backdrop-filter: blur(20px);
+                    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
                 }
                 .assessment-history-header {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.5rem;
                 }
                 .section-title {
-                    color: #eff8f3;
-                    font-size: 1.2rem;
-                    font-weight: 600;
+                    color: #f1f5f9;
+                    font-size: 1.25rem;
+                    font-weight: 700;
                 }
                 .view-all {
                     background: none;
                     border: none;
-                    color: #10b981;
+                    color: #34d399;
                     cursor: pointer;
                     font-size: 0.85rem;
+                    font-weight: 700;
+                    transition: color 0.2s;
                 }
                 .view-all:hover {
+                    color: #6ee7b7;
                     text-decoration: underline;
                 }
                 .assessment-history-list {
                     display: flex;
                     flex-direction: column;
-                    gap: 0.75rem;
+                    gap: 0.85rem;
                 }
                 .history-item {
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    padding: 0.75rem 1rem;
-                    background: rgba(255, 255, 255, 0.02);
-                    border-radius: 12px;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                    transition: all 0.3s;
+                    padding: 1rem 1.25rem;
+                    background: rgba(255, 255, 255, 0.015);
+                    border-radius: 16px;
+                    border: 1px solid rgba(255, 255, 255, 0.04);
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
                 .history-item:hover {
-                    background: rgba(255, 255, 255, 0.05);
-                    border-color: rgba(16, 185, 129, 0.15);
+                    background: rgba(17, 24, 39, 0.5);
+                    border-color: rgba(99, 102, 241, 0.25);
+                    transform: translateX(4px);
                 }
                 .history-info {
                     display: flex;
                     align-items: center;
-                    gap: 1rem;
+                    gap: 1.25rem;
                     flex-wrap: wrap;
                 }
                 .history-date {
-                    color: #a8c0b5;
-                    font-size: 0.75rem;
+                    color: #94a3b8;
+                    font-size: 0.8rem;
                 }
                 .history-score {
-                    color: #eff8f3;
-                    font-size: 0.9rem;
-                    font-weight: 600;
+                    color: #f1f5f9;
+                    font-size: 0.95rem;
+                    font-weight: 700;
                 }
                 .history-badge {
-                    font-size: 0.7rem;
-                    padding: 0.2rem 0.6rem;
+                    font-size: 0.72rem;
+                    padding: 0.25rem 0.75rem;
                     border-radius: 20px;
+                    font-weight: 700;
                 }
                 .history-badge.high-risk {
-                    background: rgba(239, 68, 68, 0.2);
-                    color: #ef4444;
+                    background: rgba(239, 68, 68, 0.15);
+                    color: #f87171;
+                    border: 1px solid rgba(239, 68, 68, 0.25);
                 }
                 .history-badge.low-risk {
-                    background: rgba(16, 185, 129, 0.2);
-                    color: #10b981;
+                    background: rgba(16, 185, 129, 0.15);
+                    color: #34d399;
+                    border: 1px solid rgba(16, 185, 129, 0.25);
                 }
                 .history-source .source-tag {
-                    font-size: 0.65rem;
-                    color: #6b7280;
-                    background: rgba(255, 255, 255, 0.05);
-                    padding: 0.15rem 0.5rem;
+                    font-size: 0.68rem;
+                    color: #64748b;
+                    background: rgba(255, 255, 255, 0.03);
+                    padding: 0.2rem 0.6rem;
                     border-radius: 12px;
+                    border: 1px solid rgba(255,255,255,0.05);
                 }
 
                 /* No History Message */
                 .no-history-message {
                     text-align: center;
-                    padding: 3rem 1rem;
+                    padding: 4rem 1.5rem;
                     background: rgba(255, 255, 255, 0.02);
-                    border-radius: 16px;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
+                    border-radius: 24px;
+                    border: 1px solid rgba(255, 255, 255, 0.04);
                     margin-top: 2rem;
                 }
                 .no-history-icon {
-                    font-size: 3rem;
+                    font-size: 3.5rem;
                     display: block;
-                    margin-bottom: 1rem;
+                    margin-bottom: 1.25rem;
+                    filter: drop-shadow(0 0 10px rgba(255,255,255,0.1));
                 }
                 .no-history-message h4 {
-                    color: #eff8f3;
-                    font-size: 1.1rem;
+                    color: #f1f5f9;
+                    font-size: 1.2rem;
                     margin-bottom: 0.5rem;
+                    font-weight: 700;
                 }
                 .no-history-message p {
-                    color: #a8c0b5;
-                    font-size: 0.9rem;
-                    margin-bottom: 1.5rem;
+                    color: #94a3b8;
+                    font-size: 0.95rem;
+                    margin-bottom: 2rem;
                 }
                 .start-assessment-btn {
-                    background: linear-gradient(135deg, #10b981, #059669);
+                    background: linear-gradient(135deg, #fbbf24, #ea580c);
                     border: none;
-                    padding: 0.6rem 1.5rem;
+                    padding: 0.75rem 2rem;
                     border-radius: 30px;
-                    color: white;
-                    font-weight: 600;
+                    color: #070a13;
+                    font-weight: 700;
                     cursor: pointer;
                     transition: all 0.3s;
+                    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
                 }
                 .start-assessment-btn:hover {
                     transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+                    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.45);
                 }
 
                 @media (max-width: 768px) {
                     .history-item {
                         flex-direction: column;
                         align-items: flex-start;
-                        gap: 0.5rem;
+                        gap: 0.65rem;
+                        padding: 1.1rem;
                     }
                     .history-info {
                         flex-wrap: wrap;
+                        gap: 0.85rem;
                     }
                     .assessment-history-header {
                         flex-direction: column;
                         align-items: flex-start;
-                        gap: 0.5rem;
+                        gap: 0.75rem;
+                    }
+                    .assessment-history-section {
+                        padding: 1.5rem 1rem;
+                        border-radius: 20px;
                     }
                 }
 
