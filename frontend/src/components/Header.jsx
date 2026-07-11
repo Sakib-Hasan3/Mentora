@@ -17,6 +17,28 @@ const Header = () => {
     const notificationRef = useRef(null);
     const mobileMenuRef = useRef(null);
 
+    const [theme, setTheme] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('mentora_theme') || 'dark';
+        }
+        return 'dark';
+    });
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            if (theme === 'light') {
+                document.documentElement.classList.add('light');
+            } else {
+                document.documentElement.classList.remove('light');
+            }
+            localStorage.setItem('mentora_theme', theme);
+        }
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
+
     // Fetch notifications with error handling
     const fetchNotifications = async () => {
         if (!user || loading) return;
@@ -161,6 +183,16 @@ const Header = () => {
 
                 {/* Right Section */}
                 <div className="header-right">
+                    {/* Theme Toggler */}
+                    <button 
+                        className="theme-toggle-btn"
+                        onClick={toggleTheme}
+                        title={theme === 'dark' ? 'লাইট মোড অন করুন' : 'ডার্ক মোড অন করুন'}
+                        style={{ outline: 'none' }}
+                    >
+                        {theme === 'dark' ? '☀️' : '🌙'}
+                    </button>
+
                     {/* Notifications */}
                     <div className="notification-wrapper" ref={notificationRef}>
                         <button 
@@ -288,6 +320,20 @@ const Header = () => {
                                 <span className="mobile-nav-label">{item.label}</span>
                             </button>
                         ))}
+                        <button 
+                            className="mobile-nav-link"
+                            onClick={() => {
+                                toggleTheme();
+                                setShowMobileMenu(false);
+                            }}
+                            style={{ outline: 'none' }}
+                        >
+                            <span className="mobile-nav-icon">{theme === 'dark' ? '☀️' : '🌙'}</span>
+                            <span className="mobile-nav-label">
+                                {theme === 'dark' ? 'লাইট মোড' : 'ডার্ক মোড'}
+                            </span>
+                        </button>
+
                         <button 
                             className="mobile-nav-link logout-nav"
                             onClick={() => {
