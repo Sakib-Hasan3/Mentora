@@ -70,6 +70,7 @@ async def google_login(data: GoogleLoginRequest):
         )
         
     user = await db.get_collection("users").find_one({"email": email_lower})
+    is_sakib = email_lower == "sakib@gmail.com"
     
     if not user:
         # Register user on the fly if this email does not exist
@@ -78,13 +79,27 @@ async def google_login(data: GoogleLoginRequest):
             "email": email_lower,
             "hashed_password": "",  # Passwordless login
             "is_active": True,
-            "user_type": "free",
-            "is_admin": False,
+            "user_type": "paid" if is_sakib else "free",
+            "subscription": "premium" if is_sakib else "free",
+            "is_admin": is_sakib,
             "created_at": datetime.utcnow()
         }
         result = await db.get_collection("users").insert_one(user_doc)
         user = user_doc
         user["_id"] = result.inserted_id
+    elif is_sakib and (user.get("user_type") != "paid" or user.get("subscription") != "premium" or not user.get("is_admin")):
+        # Promote to premium/admin if not already updated
+        await db.get_collection("users").update_one(
+            {"_id": user["_id"]},
+            {"$set": {
+                "user_type": "paid",
+                "subscription": "premium",
+                "is_admin": True
+            }}
+        )
+        user["user_type"] = "paid"
+        user["subscription"] = "premium"
+        user["is_admin"] = True
         
     user_id = str(user["_id"])
     token_str = create_token({"sub": user_id, "email": user["email"]})
